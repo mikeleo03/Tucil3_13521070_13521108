@@ -3,9 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- GoogleMap API -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+    crossorigin=""></script>
     <!-- Menambahkan stylesheet CSS dan script Javascript -->
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="main.js"></script>
+    <script src="main.js"></script>
     <title>Tugas Kecil 3 - Strategi Algoritma</title>
   </head>
 
@@ -14,13 +21,52 @@
     <a href="/" class="pop">Path Finder</a>
     <ul>
       <li><a href="/">About</a></li>
-      <li><a href="/">Credit</a></li>
+      <li><a href="/">Credits</a></li>
     </ul>
   </nav>
 
   <body>
+    <div class="row">
+      <!-- Map section -->
+      <div class="column left">
+        <div id="map"></div>
+      </div>
+      <div class="column right">
+        <!-- Input section -->
+        <h4>Insert File</h4>
+        <div class="label">
+          <label>Insert Test Case here!</label>
+        </div>
+        <div class="inputs">
+          <input type="file">
+        </div>
 
-    
+        <!-- Node searching section -->
+        <h4>Shortest Path Searching</h4>
+        <!-- initial node -->
+        <div>
+          <div class="label">
+            <label>Initial node</label>
+          </div>
+          <div class="inputs">
+            <select id="" class="lengthinput"></select>
+          </div>
+              
+          <!-- final node -->
+          <div class="label">
+            <label>Final node</label>
+          </div>
+          <div class="inputs">
+            <select id="" class="lengthinput"></select>
+          </div>
+        </div>
+        
+        <div class="inputs">
+          <input type="button" class="button" value="Process UCS" onclick="">
+          <input type="button" class="button" value="Process A*" onclick="">
+        </div>
+      </div>
+    </div>
   </body>
 
 </html>

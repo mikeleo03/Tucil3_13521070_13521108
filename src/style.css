@@ -18,7 +18,7 @@
 nav {
   z-index: 2;
   position: relative;
-  padding: 1rem 3rem;
+  padding: 0.5rem 2rem;
   display: flex;
   justify-content: space-between;
   font-size: 1.5rem;
@@ -28,6 +28,10 @@ nav a {
   text-decoration: none;
   padding: 1rem;
   color: white;
+}
+
+nav a:hover {
+  font-weight: bold;
 }
 
 nav ul {
@@ -45,24 +49,57 @@ nav ul {
   padding: 1.5rem;
 }
 
-/* Handling warna tulisan */
-@media screen and (max-width: 960px) {
-  nav {
-    padding: 2rem 2rem;
-    font-size: 1rem;
-  }
+/* main body */
+/* Clear floats after the columns */
+.row {
+  display: table;
+  clear: both;
 }
 
-@media screen and (max-width: 480px) {
-  nav {
-    padding: 2rem 2.5rem;
-  }
+.column {
+  float:left;
+}
 
-  .title {
-    font-size: 1rem;
-  }
+.left {
+  width: 70%;
+}
 
-  nav ul {
-    gap: 1.5rem;
-  }
+.right {
+  width: 30%;
+}
+
+/* Input section */
+.label {
+  padding: 0.3rem 1rem;
+}
+
+.inputs {
+  padding: 0.1rem 1rem;
+}
+
+/* Map section */
+#map { 
+  height: 40rem;
+  width: 35rem;
+}
+
+h4 {
+  margin-bottom: -0.1rem;
+}
+
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.lengthinput {
+  width: 5rem;
+  height: 2rem;
 }
