@@ -79,8 +79,14 @@ nav ul {
 
 /* Map section */
 #map { 
-  height: 40rem;
+  height: 25rem;
   width: 35rem;
+}
+
+.map {
+  padding: 0.1rem 1rem;
+  margin-left: 3.5rem;
+  margin-right: 3rem;
 }
 
 h4 {
