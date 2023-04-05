@@ -1,0 +1,68 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Navbar secrion */
+nav {
+  z-index: 2;
+  position: relative;
+  padding: 1rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.5rem;
+}
+
+nav a {
+  text-decoration: none;
+  padding: 1rem;
+  color: white;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  padding: 0.5rem;
+}
+
+.pop {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 1.5rem;
+}
+
+/* Handling warna tulisan */
+@media screen and (max-width: 960px) {
+  nav {
+    padding: 2rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  nav {
+    padding: 2rem 2.5rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  nav ul {
+    gap: 1.5rem;
+  }
+}
