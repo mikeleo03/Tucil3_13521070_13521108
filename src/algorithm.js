@@ -147,7 +147,7 @@ function heuristics (posList, final, initial) {
 // prioritas berdasarkan f(n) = g(n) + h(n)
 // dengan g(n) adalah jarak dari start ke n
 // h(n) adalah straight line distance dari simpul n ke finish
-function AStar (start, finish, adjMatrix, weightGraph, posList) {
+function AStar (start, finish, adjMatrix, posList) {
     // Inisiasi
     gVals = new Map();          // Nilai g(n) dari semua simpul yang hidup
     pred = new Map();           // Simpul yang terhubung dengan n
@@ -164,7 +164,7 @@ function AStar (start, finish, adjMatrix, weightGraph, posList) {
     fVals.set(start, heuristics(posList, finish, start)); // fungsi heuristics blom dibuat
 
     // Simpul awal akan dimasukkan dalam antrian prioritas fVals
-    listActiveNode.enqueue(new Node(start, heuristics(posList, finish, start)));
+    listActiveNode.enqueue(new Node(start, 0 + heuristics(posList, finish, start)));
 
     // Selama masih ada simpul aktif
     while (listActiveNode.getLength() > 0) {
@@ -194,7 +194,7 @@ function AStar (start, finish, adjMatrix, weightGraph, posList) {
                 let neighbor = (i + 1).toString();
 
                 // Kalo g(n) lebih besar dari cost ke tetangga, switch ke tetangga
-                let gValsNow = gVals.get(current.getNilai()) + weightGraph[neighbors][i];
+                let gValsNow = gVals.get(current.getNilai()) + adjMatrix[neighbors][i];
                 if (gValsNow < gVals.get(neighbor)) {
                     pred.set(neighbor, current.getNilai());
                     gVals.set(neighbor, gValsNow);
