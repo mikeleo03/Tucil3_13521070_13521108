@@ -90,7 +90,11 @@ nav ul {
 .map {
   padding: 0.1rem 1rem;
   margin-left: 3.5rem;
-  margin-right: -3rem;
+  margin-right: -3.5rem;
+}
+
+.right h4 {
+  margin-left: 1rem;
 }
 
 h4 {
@@ -112,8 +116,9 @@ h4 {
 }
 
 .lengthinput {
-  width: 5rem;
+  width: 7rem;
   height: 2rem;
+  padding-left: 1rem;
 }
 
 /* Table styling */
@@ -121,7 +126,7 @@ table {
   border-collapse: collapse;
 	text-align: center;
 	vertical-align: middle;
-  margin-left: 1rem;
+  margin-left: 2.5rem;
   margin-top: 1rem;
 }
 

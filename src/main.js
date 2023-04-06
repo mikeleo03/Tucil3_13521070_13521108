@@ -1,5 +1,6 @@
 // Impor fungsi dari file algorithm
-// import { heuristics } from './algorithm.js';
+// import { AStar } from './algorithm.js';
+// const AStar = require('./algorithm.js');
 
 // Deklarasi variabel global
 let maps;
@@ -40,7 +41,7 @@ function readFileBonus () {
     startMapSearch();   // Inisiasi penandaan posisi koordinat pada peta
     drawPathLine();     // Menggambar petak path
     tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
-    // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
+    chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
   }
 }
 
@@ -65,7 +66,7 @@ function readFile () {
     adjMatrix = infoParsed.adjMatrix;
 
     tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
-    // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
+    chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
   }
 }
 
@@ -129,5 +130,63 @@ function tablePathControl () {
         count++;
       }
     }
+  }
+}
+
+// Memilih simpul yang akan dijadikan bagian awal dan akhir
+function chooseNode () {
+  // Instansiasi konstanta
+  let pilAwal = document.getElementsByClassName('init-pos')[0];
+  let pilAkhir = document.getElementsByClassName('final-pos')[0];
+
+  // Set awal isinya kosong
+  pilAwal.innerHTML = '';
+  pilAkhir.innerHTML = '';
+
+  // Menambahkan jumlah opsi
+  for (let i = 1; i <= adjMatrix.length; i++){
+    pilAwal.innerHTML += `<option value="${i}">${i.toString()}</option>`
+    pilAkhir.innerHTML += `<option value="${i}">${i.toString()}</option>`
+  }
+}
+
+// Melakukan pemrosesan secara A*
+function doAStar () {
+  // Inisiasi posisi
+  initialPosition = document.getElementsByClassName('init-pos')[0].value;
+  finalPosition = document.getElementsByClassName('final-pos')[0].value;
+
+  // Melakukan pemrosesan menggunakan A*
+  // path = AStar(initialPosition, finalPosition, adjMatrix, posList);
+  
+  // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
+  elmtPath = document.getElementsByClassName('path')[0];
+  if (!(path.length)) {
+    // Jika panjang path kosong, maka tidak ada jalur
+    elmtPath.innerHTML = '<p>Tidak ditemukannya Path</p>';
+  } else {
+    // Jika ada, cetak path
+    let finPath = "Path: ";
+    for (let i = 0; i < path[0].length; i++){
+      if (i != path[0].length-1) {
+        finPath += path[0][i] + ' -> ';
+      } else {
+        finPath += path[0][i];
+      }
+    }
+    elmtPath.innerHTML = `<p>${finPath}</p>`;  
+    elmtPath.innerHTML += `<p>Jaraknya : ${path[1]} km`
+
+    // Ilustrasikan dalam peta masukan
+    let latlons = [];
+    drawPathLine();
+
+    for(let i = 0; i < path[0].length; i++) {
+      latlons.push(markers[path[0][i]-1].getLatLng());
+    }
+
+    let line = L.polyline(latlons, {color: 'red'});
+    // pathlines.push(line);
+    maps.addLayer(line);
   }
 }

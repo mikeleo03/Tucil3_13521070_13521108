@@ -12,7 +12,7 @@
     crossorigin=""></script>
     <!-- Menambahkan stylesheet CSS dan script Javascript -->
     <link rel="stylesheet" href="style.css">
-    <script src="main.js"></script>
+    <script src="./main.js"></script>
     <title>Tugas Kecil 3 - Strategi Algoritma</title>
   </head>
 
@@ -50,24 +50,24 @@
         <!-- initial node -->
         <div>
           <div class="label">
-            <label>Initial node</label>
+            <label for="instantiateInitial">Initial node</label>
           </div>
           <div class="inputs">
-            <select id="" class="lengthinput initial-pos"></select>
+            <select id="instantiateInitial" class="lengthinput init-pos"></select>
           </div>
               
           <!-- final node -->
           <div class="label">
-            <label>Final node</label>
+            <label for="instantiateFinal">Final node</label>
           </div>
           <div class="inputs">
-            <select id="" class="lengthinput final-pos"></select>
+            <select id="instantiateFinal" class="lengthinput final-pos"></select>
           </div>
         </div>
 
         <div class="inputs">
           <input type="button" class="button" value="Process UCS" onclick="">
-          <input type="button" class="button" value="Process A*" onclick="">
+          <input type="button" class="button" value="Process A*" onclick="doAStar();">
         </div>
       </div>
       <div class="column right">
@@ -89,6 +89,7 @@
         </table>
       </div>
     </div>
+    <div class="path"></div> 
   </body>
 
 </html>
