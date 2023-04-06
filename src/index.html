@@ -31,7 +31,7 @@
       <div class="column left">
         <div id="map" class="map"></div>
       </div>
-      <div class="column right">
+      <div class="column mid">
         <!-- Input section -->
         <h4>Insert File</h4>
         <div class="label">
@@ -41,7 +41,7 @@
           <input type="file" id="inputFile">
         </div>
         <div class="inputs">
-          <input type="button" class="" value="Load Map" onclick="readFile();">
+          <input type="button" class="button" value="Load Map" onclick="readFile();">
         </div>
 
         <!-- Node searching section -->
@@ -68,6 +68,24 @@
           <input type="button" class="button" value="Process UCS" onclick="">
           <input type="button" class="button" value="Process A*" onclick="">
         </div>
+      </div>
+      <div class="column right">
+        <h4>List of Nodes</h4>
+        <table class="table table-dark">
+          <!-- Table header -->
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nodes</th>
+              <th scope="col">Distance</th>
+            </tr>
+          </thead>
+
+          <!-- Table content -->
+          <tbody id="pathContent">
+          </tbody>
+          
+        </table>
       </div>
     </div>
   </body>

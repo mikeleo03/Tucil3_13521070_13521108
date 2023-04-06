@@ -61,11 +61,15 @@ nav ul {
 }
 
 .left {
-  width: 70%;
+  width: 60%;
+}
+
+.mid {
+  width: 25%;
 }
 
 .right {
-  width: 30%;
+  width: 15%;
 }
 
 /* Input section */
@@ -80,13 +84,13 @@ nav ul {
 /* Map section */
 #map { 
   height: 25rem;
-  width: 35rem;
+  width: 30rem;
 }
 
 .map {
   padding: 0.1rem 1rem;
   margin-left: 3.5rem;
-  margin-right: 3rem;
+  margin-right: -3rem;
 }
 
 h4 {
@@ -108,4 +112,35 @@ h4 {
 .lengthinput {
   width: 5rem;
   height: 2rem;
+}
+
+/* Table styling */
+table {
+  border-collapse: collapse;
+	text-align: center;
+	vertical-align: middle;
+  margin-left: 1rem;
+  margin-top: 1rem;
+}
+
+thead {
+	background-color: #333;
+	color: white;
+	font-size: 0.875rem;
+	letter-spacing: 2%;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #ffffff5d;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #eeeeee39;
+}
+
+th, td {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

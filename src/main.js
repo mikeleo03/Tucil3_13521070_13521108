@@ -1,5 +1,5 @@
 // Impor fungsi dari file algorithm
-// import { AStar } from './algorithm.js';
+// import { heuristics } from './algorithm.js';
 
 // Deklarasi variabel global
 let maps;
@@ -20,15 +20,7 @@ window.onload = function() {
 function readFile () {
   // Beberapa kasus ujung penerimaan file
   let input = document.getElementById('inputFile');
-  if (!input) {
-    /* Tidak ditemukannya objek element 'fileinput' pada DOM Tree */
-    alert("Um, couldn't find the fileinput element.");
-  }
-  else if (!input.files) {
-    /* Browser tidak support `files` property */
-    alert("This browser doesn't seem to support the `files` property of file inputs.");
-  }
-  else if (!input.files[0]) {
+  if (!input.files[0]) {
     alert("Please select a file!");
   } else {
     let file = input.files[0];
@@ -45,57 +37,72 @@ function readFile () {
     posList = infoParsed.posList;
     adjMatrix = infoParsed.adjMatrix;
 
-    console.log("Hello world!");
-
-    // Inisiasi penandaan posisi korrdinat pada peta
-    startMapSearch();
-
+    startMapSearch();   // Inisiasi penandaan posisi koordinat pada peta
+    drawPathLine();     // Menggambar petak path
+    tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
     // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
-    // handleNodePilForm();
-
-    // Menangani tabel daftar simpul dan jaraknya
-    // handlePathTable(); 
-
-    // Menggambar petak path
-    // drawPath();
   }
 }
 
 /* Function to initialize map */
 function startMapSearch (){
-  console.log(posList[0].lintang);
-  /* for(let i = 0; i < markers.length; i++) {
-    maps.removeLayer(markers[i]);
-  } */
+  // Instantiate markers
   markers = [];
 
-  maps.flyTo([parseFloat(posList[0].lintang), parseFloat(posList[0].bujur)], 18);
+  // Zoom in to map position
+  maps.flyTo([parseFloat(posList[0].lintang), parseFloat(posList[0].bujur)], 17);
 
   let i = 1;
   posList.forEach(function(info) {
     let marker = L.marker([parseFloat(info.lintang), parseFloat(info.bujur)], {draggable: 'true'});
     marker.id = i;
     i++;
-    marker.bindPopup(`${info.id}`);
+    marker.bindPopup(`${info.id} - ${info.nama}`);
     maps.addLayer(marker);
-
-    marker.on('dragend', function()
-    {
-      console.log("New lintang len is", marker.getLatLng());
-      posList[marker.id-1].lintang = marker.getLatLng().lintang;
-      posList[marker.id-1].bujur = marker.getLatLng().bujur;
-      console.log("New marker is", posList[marker.id]);
-      drawPath();
-      handlePathTable();
-    });
-
-    marker.on('mouseover', function (e) {
-      this.openPopup();
-    });
-    marker.on('mouseout', function (e) {
-        this.closePopup();
-    });
 
     markers.push(marker);
   });
+}
+
+/* Draw a pathline */
+function drawPathLine () {
+  // Instantiate pathline
+  path = [];
+
+  // Traverse the adjacency matrix
+  for (let i = 0; i < adjMatrix.length; i++) {
+    for (let j = 0; j < i; j++) {
+      // Validasi terhubung
+      if (adjMatrix[i][j] != -1) {
+        let latlons = [markers[i].getLatLng(), markers[j].getLatLng()];
+
+        let line = L.polyline(latlons, {color: 'green'});
+        path.push(line);
+        maps.addLayer(line);
+      }
+    }
+  }
+}
+
+function tablePathControl () {
+  // Mengambil elemen id di HTML nya
+  let tableContents = document.getElementById('pathContent');
+  tableContents.innerHTML = '';
+  let count = 1;
+
+  // Membuat tabel list simpul dari masukan
+  for (let i = 0; i < adjMatrix.length; i++) {
+    for (let j = 0; j < i; j++) {
+      // Validasi terhubung
+      if (adjMatrix[i][j] != -1) {
+        tableContents.innerHTML += 
+        `<tr>
+          <th scope="row">${count}</th>
+          <td>${j+1}-${i+1}</td>
+          <td>${adjMatrix[i][j]}</td>
+        </tr>`;
+        count++;
+      }
+    }
+  }
 }
