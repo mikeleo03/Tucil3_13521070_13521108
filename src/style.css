@@ -84,13 +84,20 @@ nav ul {
 /* Map section */
 #map { 
   height: 25rem;
-  width: 30rem;
+  width: 33rem;
 }
 
 .map {
-  padding: 0.1rem 1rem;
+  padding: 0.1rem 0.5rem;
   margin-left: 3.5rem;
-  margin-right: -3.5rem;
+  margin-right: -14rem;
+}
+
+.path {
+  padding: 0.1rem 1rem;
+  margin-left: 3rem;
+  width: 18rem;
+  overflow: auto;
 }
 
 .right h4 {
@@ -99,6 +106,10 @@ nav ul {
 
 h4 {
   margin-bottom: -0.1rem;
+}
+
+.column h4 {
+  margin-bottom: 0.5rem;
 }
 
 .button {
@@ -117,6 +128,12 @@ h4 {
 
 .lengthinput {
   width: 7rem;
+  height: 2rem;
+  padding-left: 1rem;
+}
+
+.lengthinput2 {
+  width: 5rem;
   height: 2rem;
   padding-left: 1rem;
 }
@@ -150,9 +167,4 @@ th, td {
   padding-right: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
-}
-
-.path {
-  padding: 0.1rem 1rem;
-  margin-left: 3rem;
 }

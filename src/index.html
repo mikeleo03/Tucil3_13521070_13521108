@@ -27,9 +27,11 @@
 
   <body>
     <div class="row">
-      <!-- Map section -->
       <div class="column left">
+        <!-- Map section -->
         <div id="map" class="map"></div>
+        <!-- Result section -->
+        <div class="path"></div>  
       </div>
       <div class="column mid">
         <!-- Input section -->
@@ -47,8 +49,8 @@
 
         <!-- Node searching section -->
         <h4>Shortest Path Searching</h4>
-        <!-- initial node -->
         <div>
+          <!-- initial node -->
           <div class="label">
             <label for="instantiateInitial">Initial node</label>
           </div>
@@ -71,6 +73,27 @@
         </div>
       </div>
       <div class="column right">
+        <h4>Insert Relations</h4>
+        <div class="row">
+          <!-- initial node -->
+          <div class="label column">
+            <label for="relationInitial">Start node</label>
+          </div>
+          <div class="inputs column right">
+            <select id="relationInitial" class="lengthinput2 init-rels"></select>
+          </div>
+              
+          <!-- final node -->
+          <div class="label column">
+            <label for="relationFinal">Final node</label>
+          </div>
+          <div class="inputs column right">
+            <select id="relationFinal" class="lengthinput2 final-rels"></select>
+          </div>
+        </div>
+        <div class="inputs">
+          <input type="button" class="button" value="Insert Relation" onclick="addRelation();">
+        </div>
         <h4>List of Nodes</h4>
         <table class="table table-dark">
           <!-- Table header -->
@@ -89,7 +112,6 @@
         </table>
       </div>
     </div>
-    <div class="path"></div> 
   </body>
 
 </html>

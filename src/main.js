@@ -32,12 +32,12 @@ window.onload = function() {
     maps.addLayer(marker);
     
     // Penanganan terhadap event dragend pada HTML
-    /* marker.on('dragend', function() {
-      posList[marker.id - 1].lat = marker.getLatLng().lat;
-      posList[marker.id - 1].lng = marker.getLatLng().lng;
+    marker.on('dragend', function() {
+      posList[marker.id - 1].lintang = marker.getLatLng().lat;
+      posList[marker.id - 1].bujur = marker.getLatLng().lng;
       drawPathLine();
       tablePathControl();
-    }); */
+    });
     
     // Memasukkan elemen baru pada variabel global
     markers.push(marker);
@@ -48,11 +48,11 @@ window.onload = function() {
 
     // Menambahkan row-wise
     for (var i = 0; i < adjMatrix.length; i++) {
-      adjMatrix[i].push(-1);      // instansiasi tidak terhubung
-      newRow.push(0);             // Menambah row baru dengan elemen 0 semua sebanyak kolom
+      adjMatrix[i].push(Number(-1));      // instansiasi tidak terhubung
+      newRow.push(-1);             // Menambah row baru dengan elemen 0 semua sebanyak kolom
     }
     // Menambah elemen column-wise
-    newRow.push(1);   // Ingat, elemen baru pasti bertemu elemen baru
+    newRow.push(0);   // Ingat, elemen baru pasti bertemu elemen baru
     adjMatrix.push(newRow);
 
     // Tangani untuk masukan
@@ -134,6 +134,14 @@ function startMapSearch (){
     marker.bindPopup(`${info.id} - ${info.nama}`);
     maps.addLayer(marker);
 
+    // Handle the dragend event from HTML
+    marker.on('dragend', function() {
+      posList[marker.id - 1].lintang = marker.getLatLng().lat;
+      posList[marker.id - 1].bujur = marker.getLatLng().lng;
+      drawPathLine();
+      tablePathControl();
+    });
+
     markers.push(marker);
   });
 }
@@ -190,16 +198,40 @@ function chooseNode () {
   // Instansiasi konstanta
   let pilAwal = document.getElementsByClassName('init-pos')[0];
   let pilAkhir = document.getElementsByClassName('final-pos')[0];
+  let relAwal = document.getElementsByClassName('init-rels')[0];
+  let relAkhir = document.getElementsByClassName('final-rels')[0];
 
   // Set awal isinya kosong
   pilAwal.innerHTML = '';
   pilAkhir.innerHTML = '';
+  relAwal.innerHTML = '';
+  relAkhir.innerHTML = '';
 
   // Menambahkan jumlah opsi
   for (var i = 1; i <= adjMatrix.length; i++){
     pilAwal.innerHTML += `<option value="${i}">${i.toString()}</option>`
     pilAkhir.innerHTML += `<option value="${i}">${i.toString()}</option>`
+    relAwal.innerHTML += `<option value="${i}">${i.toString()}</option>`
+    relAkhir.innerHTML += `<option value="${i}">${i.toString()}</option>`
   }
+}
+
+// Menambahkan relasi dalam graf
+function addRelation () {
+  // Ambil value dari masukan pengguna via class HTML
+  let init_rels = document.getElementsByClassName('init-rels')[0].value - 1;
+  let final_rels = document.getElementsByClassName('final-rels')[0].value - 1;
+
+  // Gunakan fungsi heuristics untuk mengambil euclidean dist
+  let distance = heuristics(posList, final_rels, init_rels).toFixed(3);
+
+  // Isi matriks ketetanggan
+  adjMatrix[init_rels][final_rels] = Number(distance);
+  adjMatrix[final_rels][init_rels] = Number(distance);
+
+  // Additional function to consider
+  tablePathControl();
+  drawPathLine();
 }
 
 // Melakukan pemrosesan secara A*
@@ -220,7 +252,6 @@ function doAStar () {
     // Jika ada, cetak path
     elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
     elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
-    // elmtPath.innerHTML += `<p>Jaraknya : ${finalPath.getPrio()} km`
 
     // Ilustrasikan dalam peta masukan
     let pointPos = [];
@@ -230,6 +261,7 @@ function doAStar () {
     }
 
     let line = L.polyline(pointPos, {color: 'red'});
+    lines.push(line);
     maps.addLayer(line);
   }
 }
