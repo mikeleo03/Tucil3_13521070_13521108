@@ -4,9 +4,9 @@
 
 // Deklarasi variabel global
 let maps;
+let finalPath;
 let adjMatrix = [];
 let posList = [];
-let finalPath;
 
 // Berkaitan dengan setup awal web
 window.onload = function() {
@@ -16,6 +16,8 @@ window.onload = function() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(maps);
+
+  /* Penanganan terhadap penambahan simpul peta dengan klik */
 }
 
 // Penerimaan dan pembaacan konfigurasi peta bonus dari masukan
@@ -61,9 +63,8 @@ function readFile () {
 
   // Instansiasi onload dengan JSON
   function initiateSearch (e) {
-    let lines = e.target.result;
     // Informasi dari masukan
-    infoParsed = JSON.parse(lines.toString());
+    infoParsed = JSON.parse(e.target.result.toString());
     adjMatrix = infoParsed.adjMatrix;
 
     tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
@@ -162,25 +163,23 @@ function doAStar () {
   
   // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
   elmtPath = document.getElementsByClassName('path')[0];
-  if (!(path.length)) {
+  if (finalPath === null) {
     // Jika panjang path kosong, maka tidak ada jalur
     elmtPath.innerHTML = '<p>Path not found!</p>';
   } else {
     // Jika ada, cetak path
     elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
-    elmtPath.innerHTML += `<p>Path : ${initialPosition} > ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
+    elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
     // elmtPath.innerHTML += `<p>Jaraknya : ${finalPath.getPrio()} km`
 
     // Ilustrasikan dalam peta masukan
-    let latlons = [];
-    drawPathLine();
-
-    for(let i = 0; i < path[0].length; i++) {
-      latlons.push(markers[path[0][i]-1].getLatLng());
+    let pointPos = [];
+    drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
+    for(let i = 0; i < finalPath.listPath.length; i++) {
+      pointPos.push(markers[finalPath.listPath[i]-1].getLatLng());
     }
 
-    let line = L.polyline(latlons, {color: 'red'});
-    // pathlines.push(line);
+    let line = L.polyline(pointPos, {color: 'red'});
     maps.addLayer(line);
   }
 }
@@ -358,6 +357,7 @@ function AStar (start, finish, adjMatrix, posList) {
   let current = start;
   // Membuat sebuah jalur awal, inisiasi peta
   let initialPath = new Path(current, 0, 0 + heuristics(posList, finish, start));
+  initialPath.listPath.push(current);
   // Memasukkan jalur awal ke antrian simpul aktif
   let listActiveNode = new PQ();
   listActiveNode.enqueue(initialPath);
