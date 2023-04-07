@@ -7,6 +7,8 @@ let maps;
 let finalPath;
 let adjMatrix = [];
 let posList = [];
+let markers = [];
+let lines = [];
 
 // Berkaitan dengan setup awal web
 window.onload = function() {
@@ -17,7 +19,46 @@ window.onload = function() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(maps);
 
-  /* Penanganan terhadap penambahan simpul peta dengan klik */
+  /* Penanganan terhadap penambahan simpul peta dengan event double klik */
+  maps.doubleClickZoom.disable();  // disable dulu zoom double clicknya
+  maps.on('dblclick', function(e) {
+    // Melakukan penanganan terhadap marker
+    let marker = L.marker(e.latlng, {draggable: 'true'});
+    
+    // Membuat sebuah simpul baru dalam json
+    let newNode = {"id": (posList.length + 1).toString(), "nama": "simpul baru", "lintang": e.latlng.lat, "bujur": e.latlng.lng};
+    marker.id = newNode.id; // Update ID
+    marker.bindPopup(`${newNode.id} - ${newNode.nama}`); // Initialize popup
+    maps.addLayer(marker);
+    
+    // Penanganan terhadap event dragend pada HTML
+    /* marker.on('dragend', function() {
+      posList[marker.id - 1].lat = marker.getLatLng().lat;
+      posList[marker.id - 1].lng = marker.getLatLng().lng;
+      drawPathLine();
+      tablePathControl();
+    }); */
+    
+    // Memasukkan elemen baru pada variabel global
+    markers.push(marker);
+    posList.push(newNode);
+
+    // Instansiasi matriks elemen baru matriks ketetanggan
+    let newRow = [];
+
+    // Menambahkan row-wise
+    for (var i = 0; i < adjMatrix.length; i++) {
+      adjMatrix[i].push(-1);      // instansiasi tidak terhubung
+      newRow.push(0);             // Menambah row baru dengan elemen 0 semua sebanyak kolom
+    }
+    // Menambah elemen column-wise
+    newRow.push(1);   // Ingat, elemen baru pasti bertemu elemen baru
+    adjMatrix.push(newRow);
+
+    // Tangani untuk masukan
+    chooseNode();
+    return e;
+  })
 }
 
 // Penerimaan dan pembaacan konfigurasi peta bonus dari masukan
@@ -74,6 +115,11 @@ function readFile () {
 
 /* Function to initialize map */
 function startMapSearch (){
+  // Bersihin dulu yang sebelumnya
+  for (var j = 0; j < markers.length; j++) {
+    maps.removeLayer(markers[j]);
+  }
+
   // Instantiate markers
   markers = [];
 
@@ -94,18 +140,22 @@ function startMapSearch (){
 
 /* Draw a pathline */
 function drawPathLine () {
+  // Hapus dulu yang sebelumnya
+  for(var i = 0; i < lines.length; i++) {
+    maps.removeLayer(lines[i]);
+  }
   // Instantiate pathline
-  path = [];
+  lines = [];
 
   // Traverse the adjacency matrix
-  for (let i = 0; i < adjMatrix.length; i++) {
-    for (let j = 0; j < i; j++) {
+  for (var i = 0; i < adjMatrix.length; i++) {
+    for (var j = 0; j < i; j++) {
       // Validasi terhubung
       if (adjMatrix[i][j] != -1) {
         let latlons = [markers[i].getLatLng(), markers[j].getLatLng()];
 
         let line = L.polyline(latlons, {color: 'green'});
-        path.push(line);
+        lines.push(line);
         maps.addLayer(line);
       }
     }
@@ -119,8 +169,8 @@ function tablePathControl () {
   let count = 1;
 
   // Membuat tabel list simpul dari masukan
-  for (let i = 0; i < adjMatrix.length; i++) {
-    for (let j = 0; j < i; j++) {
+  for (var i = 0; i < adjMatrix.length; i++) {
+    for (var j = 0; j < i; j++) {
       // Validasi terhubung
       if (adjMatrix[i][j] != -1) {
         tableContents.innerHTML += 
@@ -146,7 +196,7 @@ function chooseNode () {
   pilAkhir.innerHTML = '';
 
   // Menambahkan jumlah opsi
-  for (let i = 1; i <= adjMatrix.length; i++){
+  for (var i = 1; i <= adjMatrix.length; i++){
     pilAwal.innerHTML += `<option value="${i}">${i.toString()}</option>`
     pilAkhir.innerHTML += `<option value="${i}">${i.toString()}</option>`
   }
