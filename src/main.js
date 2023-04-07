@@ -6,6 +6,7 @@
 let maps;
 let adjMatrix = [];
 let posList = [];
+let finalPath;
 
 // Berkaitan dengan setup awal web
 window.onload = function() {
@@ -157,7 +158,7 @@ function doAStar () {
   finalPosition = document.getElementsByClassName('final-pos')[0].value;
 
   // Melakukan pemrosesan menggunakan A*
-  path = AStar(initialPosition, finalPosition, adjMatrix, posList);
+  AStar(parseInt(initialPosition), parseInt(finalPosition), adjMatrix, posList);
   
   // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
   elmtPath = document.getElementsByClassName('path')[0];
@@ -193,147 +194,158 @@ function doAStar () {
 
 /* File untuk melakukan pemrosesan terhadap simpul */
 /* Berbagai deklarasi data akan dijabarkan disini */
+// Kelas Path, untuk melakukan pemrosesan terkait data simpul analisis
+class Path {
+  // 1. Konstruktor
+  constructor (currentPos, passedpath, priority) {
+      this.listPath = [];
+      this.currentPos = currentPos;
+      this.passedpath = passedpath;
+      this.priority = priority;
+  }
 
-// Inisiasi konstanta tak hingga
-// Fun-fact : jarak 2 titik terjauh di bumi 7590 km, jadi ga akan mungkin ada yang 10000
-const INF = 10000; // dalam km
+  copyPath (paths) {
+      for (var i = 0; i < paths.listPath.length; i++) {
+        this.listPath.push(paths.listPath[i]);
+      }
+  }
 
-// Kelas Node, untuk inisiasi sebuah simpul yang akan dianalisis
-class Node {
-    // 1. Konstruktor
-    constructor (nilai, priority) {
-        this.nilai = nilai
-        this.priority = priority
-    }
+  // 3. Getter priority
+  getPrio () {
+      return this.priority;
+  }
 
-    // 2. Getter nilai
-    getNilai () {
-        return this.nilai;
-    }
+  // 4. Print path
+  printPath () {
+      let Path = "";
+      for (var i = 0; i < this.route.getRouteLength(); i++) {
+          Path = Path + this.route.listPath[i] + " > ";
+      }
+  }
 
-    // 3. Getter priority
-    getPrio () {
-        return this.priority;
-    }
+  // 5. Add new position to the path
+  addPosition (pos) {
+    this.listPath.push(pos);
+    this.currentPos = pos;
+  }
 }
 
 // Kelas PQ berupa priorityqueue, untuk melakukan pemilihan simpul dengan bobot terkecil
 class PQ {
-    // 1. Konstruktor
-    constructor () {
-        this.queue = [];
-    }
+  // 1. Konstruktor
+  constructor () {
+      this.queue = [];
+  }
 
-    // 2. Getter panjang queue
-    getLength () {
-        return this.queue.length;
-    }
+  // 2. Getter panjang queue
+  getLength () {
+      return this.queue.length;
+  }
 
-    // 3. Getter elemen queue
-    getElmt (idx) {
-        return this.queue[idx];
-    }
+  // 3. Getter elemen queue
+  getElmt (idx) {
+      return this.queue[idx];
+  }
 
-    // 4. Setter elemen queue
-    setElmt (idx, val) {
-        this.queue[idx] = val;
-    }
+  // 4. Setter elemen queue
+  setElmt (idx, val) {
+      this.queue[idx] = val;
+  }
 
-    // 5. Swap, untuk menukar posisi
-    swap (pos1, pos2) {
-        let val = this.queue[pos1];
-        this.setElmt(pos1, this.getElmt(pos2));
-        this.setElmt(pos2, val);
-        // Mengembalikan isi queue setelah ditukar
-        return this.queue;
-    }
+  // 5. Swap, untuk menukar posisi
+  swap (pos1, pos2) {
+      let val = this.queue[pos1];
+      this.setElmt(pos1, this.getElmt(pos2));
+      this.setElmt(pos2, val);
+      // Mengembalikan isi queue setelah ditukar
+      return this.queue;
+  }
 
-    // 6. Enquque, prosedur untuk menambahkan antrian
-    // Ingat perlu juga untuk mempertimbangkan prioritas
-    enqueue (nilai) {
-        this.queue.push(nilai);
-        // Melakukan pemrosesan pemasukan
-        let idx = this.getLength() - 1
-        while (idx > 0) {
-            let predecessor = Math.floor((idx - 1)/2);
-            if (this.getElmt(predecessor).getPrio() > this.getElmt(idx).getPrio()) {
-                this.swap(idx, predecessor);
-                idx = predecessor;
-            } else {
-                break;
-            }
-        }
-        return this.queue;
-    }
+  // 6. Boolean function isEmpty
+  isEmpty () {
+      return (this.getLength() == 0);
+  }
 
-    // 7. Dequeue, prosedur untuk menghapus elemen dari antrian prioritas
-    // Ingat perlu mempertimbangkan prioritas
-    dequeue () {
-        // Pop di js unik, jadi harus pindah ke depan
-        const prio = this.getElmt(0).getPrio();
-        this.swap(length - 1, 0);
+  // 7. Enquque, prosedur untuk menambahkan antrian
+  // Ingat perlu juga untuk mempertimbangkan prioritas
+  enqueue (newPath) {
+      var check = false;
 
-        let value = this.queue.pop();
-        // Perhatikan solusi pop
-        if (this.getLength() > 1) {
-            let predecessor = 0;
-            while (idxswap !== null) {
-                let leftPart = 2 * predecessor;
-                let rightPart = 2 * predecessor;
-                idxswap = null;
-                // Penanganan untuk sisi partisi kiri
-                if (leftPart < this.getLength()) {
-                    if (this.getElmt(leftPart).getPrio() < prio) {
-                        idxswap = leftPart;
-                    }
-                }
+      // Menemukan lokasi yang tepat untuk insert
+      for (var i = 0; i < this.getLength(); i++) {
+          if (this.getElmt(i).getPrio() > newPath.getPrio()) {
+              // Menemukan lokasi yang tepat
+              this.queue.splice(i, 0, newPath);
+              check = true;
+              break;
+          }
+      }
+  
+      // Kalo semua lebih kecil, insert last
+      if (!check) {
+          this.queue.push(newPath);
+      }
+  }
 
-                // Penanganan untuk sisi partisi kanan
-                if (rightPart < this.getLength()) {
-                    if ((this.getElmt(rightPart).getPrio() < prio && idxswap === null) ||
-                    (this.getElmt(rightPart).getPrio() < this.getElmt(leftPart).getPrio() && idxswap !== null)) {
-                        idxswap = rightPart
-                    }
-                }
-
-                // Kalo sudah tiada
-                if (idxswap === null) {
-                    break;
-                }
-
-                this.swap(idxswap, predecessor);
-                predecessor = idxswap;
-            }
-
-            return value;
-        }
-    }
+  // 8. Dequeue, prosedur untuk menghapus elemen dari antrian prioritas
+  // Ingat perlu mempertimbangkan prioritas
+  dequeue () {
+      if (this.isEmpty()) {
+          return "PrioQueue kosong";
+      } else {
+          return this.queue.shift();
+      }
+  }
 }
 
 // Fungsi heuristics, untuk melakukan kalkulasi nilai h(n)
 // Yaitu straight line distance dari simpul n ke finish
 // Inspired by https://www.geeksforgeeks.org/program-distance-two-points-earth/
 function heuristics (posList, final, initial) {
-    // Mengambil informasi dari masukan
-    // Posisi awal
-    let lintang1 = posList[initial].lintang * Math.PI / 180;
-    let bujur1 = posList[initial].bujur * Math.PI / 180;
-    // Posisi akhir
-    let lintang2 = posList[final].lintang * Math.PI / 180;
-    let bujur2 = posList[final].bujur * Math.PI / 180;
+  // Mengambil informasi dari masukan
+  // Posisi awal
+  let lintang1 = posList[initial].lintang * Math.PI / 180;
+  let bujur1 = posList[initial].bujur * Math.PI / 180;
+  // Posisi akhir
+  let lintang2 = posList[final].lintang * Math.PI / 180;
+  let bujur2 = posList[final].bujur * Math.PI / 180;
 
-    // Perhitungan
-    let r = 6371
-    let dLintang = lintang2 - lintang1
-    let dBujur = bujur2 - bujur1
+  // Perhitungan
+  let r = 6371
+  let dLintang = lintang2 - lintang1
+  let dBujur = bujur2 - bujur1
 
-    // Haversine formula
-    let a = Math.pow(Math.sin(dLintang / 2), 2)
-            + Math.cos(lintang1) * Math.cos(lintang2)
-            * Math.pow(Math.sin(dBujur / 2),2);
-    let c = 2 * Math.asin(Math.sqrt(a));
+  // Haversine formula
+  let a = Math.pow(Math.sin(dLintang / 2), 2)
+          + Math.cos(lintang1) * Math.cos(lintang2)
+          * Math.pow(Math.sin(dBujur / 2),2);
+  let c = 2 * Math.asin(Math.sqrt(a));
 
-    return r * c;
+  return r * c;
+}
+
+function isAStarDone (listActiveNode, finish) {
+  let temp = false;
+  for (var i = 0; i < listActiveNode.getLength(); i++) {
+      if (listActiveNode.getElmt(i).currentPos == finish) {
+          temp = true;
+          finalPath = listActiveNode.getElmt(i);
+          break;
+      }
+  }
+
+  return temp;
+}
+
+function getExpand (position, adjMatrix, cek) {
+  let expandNode = [];
+  for (var i = 0; i < adjMatrix[0].length; i++) {
+      if (adjMatrix[position - 1][i] != -1 && !cek.includes(i + 1)) {
+          expandNode.push(i);
+      }
+  }
+
+  return expandNode;
 }
 
 // Fungsi AStar, menjalankan algoritma A*
@@ -341,76 +353,36 @@ function heuristics (posList, final, initial) {
 // dengan g(n) adalah jarak dari start ke n
 // h(n) adalah straight line distance dari simpul n ke finish
 function AStar (start, finish, adjMatrix, posList) {
-    // Inisiasi
-    gVals = new Map();          // Nilai g(n) dari semua simpul yang hidup
-    pred = new Map();           // Simpul yang terhubung dengan n
-    fVals = new Map();          // Nilai f(n), yaitu g(n) + h(n)
-    listActiveNode = new PQ();  // Simpul aktif kemudian disimpan dalam PriorityQueue untuk diatur prioritasnya
+  // Instansiasi simpul yang udah pernah kena ekspan
+  let sudahdicek = [];
+  sudahdicek.push(start);
+  // Inisiasi posisi awal
+  let current = start;
+  // Membuat sebuah jalur awal, inisiasi peta
+  let initialPath = new Path(current, 0, 0 + heuristics(posList, finish, start));
+  // Memasukkan jalur awal ke antrian simpul aktif
+  let listActiveNode = new PQ();
+  listActiveNode.enqueue(initialPath);
 
-    // Karena proses dimulai dari awal, maka jarak semua simpul dari start takhingga
-    for (let i = 0; i < adjMatrix.length; i++) {
-        gVals.set((i + 1).toString(), INF);
-        fVals.set((i + 1).toString(), INF);
-    }
-    // Kecuali simpul awal
-    gVals.set(start, 0);
-    fVals.set(start, heuristics(posList, finish, start)); // fungsi heuristics blom dibuat
-    console.log(gVals);
-    console.log(fVals);
-
-    // Simpul awal akan dimasukkan dalam antrian prioritas fVals
-    listActiveNode.enqueue(new Node(start, 0 + heuristics(posList, finish, start)));
-
-    // Selama masih ada simpul aktif
-    console.log(listActiveNode.getLength());
-    console.log(listActiveNode.getElmt(0));
-    while (listActiveNode.getLength() != 0) {
-        let current = listActiveNode.getElmt(0);
-
-        // Kalo path sedang ada di simpul hidup, buat grafnya
-        if (current.getNilai() == finish) {
-            console.log("Masuk sini");
-            let dist = gVals.get(current);
-            let finalPath = [current];
-
-            /* console.log(finalPath);
-            console.log(dist); */
-
-            // Proses rekonstruksi graf hasil
-            while (pred.has(current)) {
-                current = pred.get(current);
-                finalPath.unshift(current); // unshift == insert first
-            }
-
-            // distance yang dikembalikan sudah pasti jarak total
-            return [finalPath, dist];
-        }
-        listActiveNode.dequeue();
-
-        // Jika tidak, maka siap untuk pemrosesan simpul
-        // Pemrosesan dilakukan terhadap tetangganya
-        let neighbors = adjMatrix[parseInt(current.getNilai()) - 1]
-        console.log(neighbors);
-        for (let i = 0; i < neighbors.length; i++) {
-            // Kalo bertetangga
-            console.log("Masuk sini2");
-            if (neighbors[i] != -1) {
-                let neighbor = (i + 1).toString();
-
-                // Kalo g(n) lebih besar dari cost ke tetangga, switch ke tetangga
-                let gValsNow = gVals.get(current.getNilai()) + neighbors[i];
-                if (gValsNow < gVals.get(neighbor)) {
-                    pred.set(neighbor, current.getNilai());
-                    gVals.set(neighbor, gValsNow);
-                    fVals.set(neighbor, gValsNow + heuristics(posList, finish, start));
-                    listActiveNode.enqueue(new Node(neighbor, gValsNow + heuristics(posList, finish, start)));
-                }
-                console.log(gVals);
-                console.log(fVals);
-            }
-        }
-    }
-
-    // Penanganan jika tidak ada jalur yang menghubungkan
-    return [];
+  // Selama belum ada rute yang mencapai finish
+  while (!isAStarDone(listActiveNode, finish)) {
+      // Dequeue untuk ambil rute paling depan
+      let Paths = listActiveNode.dequeue();
+      // Ubah posisi titik analisis saat ini
+      current = Paths.currentPos;
+      if (!sudahdicek.includes(current)) {
+        sudahdicek.push(current);
+      }
+      // Cari semua ekspan dari titik ini
+      let expandNode = getExpand(current, adjMatrix, sudahdicek);
+      for (var i = 0; i < expandNode.length; i++) {
+          // Insiasi path baru yang ditambahkan rute sebelumnya
+          gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+          hn = heuristics(posList, finish, expandNode[i] + 1);
+          let newPath = new Path(expandNode[i] + 1, gn, gn + hn);
+          newPath.copyPath(Paths);
+          newPath.addPosition(expandNode[i] + 1);
+          listActiveNode.enqueue(newPath);
+      }
+  }
 }

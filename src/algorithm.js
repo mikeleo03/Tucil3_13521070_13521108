@@ -1,10 +1,6 @@
 /* File untuk melakukan pemrosesan terhadap simpul */
 /* Berbagai deklarasi data akan dijabarkan disini */
 
-// Inisiasi konstanta tak hingga
-// Fun-fact : jarak 2 titik terjauh di bumi 7590 km, jadi ga akan mungkin ada yang 10000
-const INF = 10000; // dalam km
-
 // Kelas Route, untuk menyimpan peta yang sudah dilalui
 class Route {
     // 1. Konstruktor
@@ -27,13 +23,19 @@ class Route {
     getRouteLength () {
         return this.listPath.length;
     }
+
+    // 5. Add new position to the path
+    addPosition (pos) {
+        this.listPath.push(pos);
+        this.currentPos = pos;
+    }
 }
 
 // Kelas Node, untuk inisiasi sebuah simpul yang akan dianalisis
 class Path {
     // 1. Konstruktor
-    constructor (priority) {
-        this.route = new Route();
+    constructor (route, priority) {
+        this.route = route;
         this.priority = priority;
     }
 
@@ -117,7 +119,7 @@ class PQ {
     // Ingat perlu mempertimbangkan prioritas
     dequeue () {
         if (this.isEmpty()) {
-            return "Queue kosong";
+            return "PrioQueue kosong";
         } else {
             return this.queue.shift();
         }
@@ -150,68 +152,69 @@ function heuristics (posList, final, initial) {
     return r * c;
 }
 
+function isAStarDone (listActiveNode, finish) {
+    let temp = false;
+    for (var i = 0; i < listActiveNode.getLength(); i++) {
+        if (listActiveNode.getElmt(i).getRoute().getCurrentPos() == finish) {
+            temp = true;
+            finalPath = listActiveNode.getElmt(i);
+            break;
+        }
+    }
+
+    return temp;
+}
+
+function getExpand (position, adjMatrix, expanded) {
+    let expandNode = [];
+    for (var i = 0; i < adjMatrix[0].length; i++) {
+        if (adjMatrix[position - 1][i] != -1 && !expanded.includes(adjMatrix[position - 1][i])) {
+            expandNode.push(i);
+        }
+    }
+
+    return expandNode;
+}
+
 // Fungsi AStar, menjalankan algoritma A*
 // prioritas berdasarkan f(n) = g(n) + h(n)
 // dengan g(n) adalah jarak dari start ke n
 // h(n) adalah straight line distance dari simpul n ke finish
 function AStar (start, finish, adjMatrix, posList) {
-    // Inisiasi
-    gVals = new Map();          // Nilai g(n) dari semua simpul yang hidup
-    pred = new Map();           // Simpul yang terhubung dengan n
-    fVals = new Map();          // Nilai f(n), yaitu g(n) + h(n)
-    listActiveNode = new PQ();  // Simpul aktif kemudian disimpan dalam PriorityQueue untuk diatur prioritasnya
+    // Instansiasi simpul yang udah pernah kena ekspan
+    let expanded = [];
+    expanded.push(start);
+    // Inisiasi posisi awal
+    let currentPos = start;
+    // Memasukkan posisi awal ke rute baru
+    let initialRoute = new Route();
+    initialRoute.addPosition(currentPos);
+    // Memasukkan rute baru ke jalur awal
+    let initialPath = new Path(initialRoute, 0 + heuristics(posList, finish, start));
+    // Memasukkan jalur awal ke antrian simpul aktif
+    let listActiveNode = new PQ();
+    listActiveNode.enqueue(initialPath);
 
-    // Karena proses dimulai dari awal, maka jarak semua simpul dari start takhingga
-    for (let i = 0; i < adjMatrix.length; i++) {
-        gVals.set((i + 1).toString(), INF);
-        fVals.set((i + 1).toString(), INF);
-    }
-    // Kecuali simpul awal
-    gVals.set(start, 0);
-    fVals.set(start, heuristics(posList, finish, start)); // fungsi heuristics blom dibuat
-
-    // Simpul awal akan dimasukkan dalam antrian prioritas fVals
-    listActiveNode.enqueue(new Node(start, 0 + heuristics(posList, finish, start)));
-
-    // Selama masih ada simpul aktif
-    while (listActiveNode.getLength() > 0) {
-        let current = listActiveNode.getElmt(0);
-
-        // Kalo path sedang ada di simpul hidup, buat grafnya
-        if (current.getNilai() == finish) {
-            let dist = gVals.get(current);
-            let finalPath = [current];
-
-            // Proses rekonstruksi graf hasil
-            while (pred.has(current)) {
-                current = pred.get(current);
-                finalPath.unshift(current); // unshift == insert first
-            }
-
-            // distance yang dikembalikan sudah pasti jarak total
-            return [finalPath, dist];
-        }
-
-        // Jika tidak, maka siap untuk pemrosesan simpul
-        // Pemrosesan dilakukan terhadap tetangganya
-        let neighbors = parseInt(current.getNilai()) - 1
-        for (let i = 0; i < neighbor.length; i++) {
-            // Kalo bertetangga
-            if (neighbors[i] == 1) {
-                let neighbor = (i + 1).toString();
-
-                // Kalo g(n) lebih besar dari cost ke tetangga, switch ke tetangga
-                let gValsNow = gVals.get(current.getNilai()) + adjMatrix[neighbors][i];
-                if (gValsNow < gVals.get(neighbor)) {
-                    pred.set(neighbor, current.getNilai());
-                    gVals.set(neighbor, gValsNow);
-                    fVals.set(neighbor, gValsNow + heuristics(posList, finish, start));
-                    listActiveNode.enqueue(new Node(neighbor, gValsNow + heuristics(posList, finish, start)));
-                }
-            }
+    // Selama belum ada rute yang mencapai finish
+    while (!isAStarDone(listActiveNode, finish)) {
+        // Dequeue untuk ambil rute paling depan
+        initialPath = listActiveNode.dequeue();
+        // Ambil rute saat ini
+        initialRoute = initialPath.getRoute();
+        // Ubah posisi titik analisis saat ini
+        currentPos = initialRoute.getCurrentPos();
+        expanded.push(currentPos);
+        // Cari semua ekspan dari titik ini
+        let expandNode = getExpand(currentPos, adjMatrix, expanded);
+        for (var i = 0; i < expandNode.length; i++) {
+            // Instansiasi rute baru yang ditambahkan petak baru
+            let newRoute = initialRoute;
+            newRoute.addPosition(expandNode[i] + 1);
+            // Insiasi path baru yang ditambahkan rute sebelumnya
+            gn = adjMatrix[currentPos - 1][expandNode[i]];
+            hn = heuristics(posList, finish, currentPos);
+            let newPath = new Path(newRoute, gn + hn);
+            listActiveNode.enqueue(newPath);
         }
     }
-
-    // Penanganan jika tidak ada jalur yang menghubungkan
-    return [];
 }
