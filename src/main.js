@@ -164,19 +164,12 @@ function doAStar () {
   elmtPath = document.getElementsByClassName('path')[0];
   if (!(path.length)) {
     // Jika panjang path kosong, maka tidak ada jalur
-    elmtPath.innerHTML = '<p>Tidak ditemukannya Path</p>';
+    elmtPath.innerHTML = '<p>Path not found!</p>';
   } else {
     // Jika ada, cetak path
-    let finPath = "Path: ";
-    for (let i = 0; i < path[0].length; i++){
-      if (i != path[0].length-1) {
-        finPath += path[0][i] + ' -> ';
-      } else {
-        finPath += path[0][i];
-      }
-    }
-    elmtPath.innerHTML = `<p>${finPath}</p>`;  
-    elmtPath.innerHTML += `<p>Jaraknya : ${path[1]} km`
+    elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
+    elmtPath.innerHTML += `<p>Path : ${initialPosition} > ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
+    // elmtPath.innerHTML += `<p>Jaraknya : ${finalPath.getPrio()} km`
 
     // Ilustrasikan dalam peta masukan
     let latlons = [];
@@ -218,9 +211,14 @@ class Path {
   // 4. Print path
   printPath () {
       let Path = "";
-      for (var i = 0; i < this.route.getRouteLength(); i++) {
-          Path = Path + this.route.listPath[i] + " > ";
+      for (var i = 0; i < this.listPath.length; i++) {
+        if (i != this.listPath.length - 1) {
+          Path = Path + this.listPath[i] + " > ";
+        } else {
+          Path = Path + this.listPath[i];
+        }
       }
+      return Path;
   }
 
   // 5. Add new position to the path

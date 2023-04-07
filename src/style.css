@@ -151,3 +151,8 @@ th, td {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+.path {
+  padding: 0.1rem 1rem;
+  margin-left: 3rem;
+}
