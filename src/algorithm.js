@@ -5,22 +5,54 @@
 // Fun-fact : jarak 2 titik terjauh di bumi 7590 km, jadi ga akan mungkin ada yang 10000
 const INF = 10000; // dalam km
 
-// Kelas Node, untuk inisiasi sebuah simpul yang akan dianalisis
-class Node {
+// Kelas Route, untuk menyimpan peta yang sudah dilalui
+class Route {
     // 1. Konstruktor
-    constructor (nilai, priority) {
-        this.nilai = nilai
-        this.priority = priority
+    constructor (currentPos) {
+        this.listPath = [];
+        this.currentPos = currentPos;
+    }
+
+    // 2. Getter listPath
+    getListPath () {
+        return this.listPath;
+    }
+
+    // 3. Getter currentPos
+    getCurrentPos () {
+        return this.currentPos;
+    }
+
+    // 4. Getter panjang rute
+    getRouteLength () {
+        return this.listPath.length;
+    }
+}
+
+// Kelas Node, untuk inisiasi sebuah simpul yang akan dianalisis
+class Path {
+    // 1. Konstruktor
+    constructor (priority) {
+        this.route = new Route();
+        this.priority = priority;
     }
 
     // 2. Getter nilai
-    getNilai () {
-        return this.nilai;
+    getRoute () {
+        return this.route;
     }
 
     // 3. Getter priority
     getPrio () {
         return this.priority;
+    }
+
+    // 4. Print path
+    printPath () {
+        let Path = "";
+        for (var i = 0; i < this.route.getRouteLength(); i++) {
+            Path = Path + this.route.listPath[i] + " > ";
+        }
     }
 }
 
@@ -55,64 +87,39 @@ class PQ {
         return this.queue;
     }
 
-    // 6. Enquque, prosedur untuk menambahkan antrian
+    // 6. Boolean function isEmpty
+    isEmpty () {
+        return (this.getLength() == 0);
+    }
+
+    // 7. Enquque, prosedur untuk menambahkan antrian
     // Ingat perlu juga untuk mempertimbangkan prioritas
-    enqueue (nilai) {
-        this.queue.push(nilai);
-        // Melakukan pemrosesan pemasukan
-        let idx = this.getLength() - 1
-        while (idx > 0) {
-            let predecessor = Math.floor((idx - 1)/2);
-            if (this.getElmt(predecessor).getPrio() > this.getElmt(idx).getPrio()) {
-                this.swap(idx, predecessor);
-                idx = predecessor;
-            } else {
+    enqueue (newPath) {
+        var check = false;
+  
+        // Menemukan lokasi yang tepat untuk insert
+        for (var i = 0; i < this.getLength(); i++) {
+            if (this.getElmt(i).getPrio() > newPath.getPrio()) {
+                // Menemukan lokasi yang tepat
+                this.queue.splice(i, 0, newPath);
+                check = true;
                 break;
             }
         }
-        return this.queue;
+    
+        // Kalo semua lebih kecil, insert last
+        if (!check) {
+            this.queue.push(newPath);
+        }
     }
 
-    // 7. Dequeue, prosedur untuk menghapus elemen dari antrian prioritas
+    // 8. Dequeue, prosedur untuk menghapus elemen dari antrian prioritas
     // Ingat perlu mempertimbangkan prioritas
     dequeue () {
-        // Pop di js unik, jadi harus pindah ke depan
-        const prio = this.getElmt(0).getPrio();
-        this.swap(length - 1, 0);
-
-        let value = this.queue.pop();
-        // Perhatikan solusi pop
-        if (this.getLength() > 1) {
-            let predecessor = 0;
-            while (idxswap !== null) {
-                let leftPart = 2 * predecessor;
-                let rightPart = 2 * predecessor;
-                idxswap = null;
-                // Penanganan untuk sisi partisi kiri
-                if (leftPart < this.getLength()) {
-                    if (this.getElmt(leftPart).getPrio() < prio) {
-                        idxswap = leftPart;
-                    }
-                }
-
-                // Penanganan untuk sisi partisi kanan
-                if (rightPart < this.getLength()) {
-                    if ((this.getElmt(rightPart).getPrio() < prio && idxswap === null) ||
-                    (this.getElmt(rightPart).getPrio() < this.getElmt(leftPart).getPrio() && idxswap !== null)) {
-                        idxswap = rightPart
-                    }
-                }
-
-                // Kalo sudah tiada
-                if (idxswap === null) {
-                    break;
-                }
-
-                this.swap(idxswap, predecessor);
-                predecessor = idxswap;
-            }
-
-            return value;
+        if (this.isEmpty()) {
+            return "Queue kosong";
+        } else {
+            return this.queue.shift();
         }
     }
 }
