@@ -1,87 +1,122 @@
 /* File untuk melakukan pemrosesan terhadap simpul */
 /* Berbagai deklarasi data akan dijabarkan disini */
 
-// Kelas Route, untuk menyimpan peta yang sudah dilalui
-class Route {
-    // 1. Konstruktor
-    constructor (currentPos) {
+/**
+ * Kelas Path, untuk melakukan pemrosesan terkait data simpul analisis
+ * 
+ * @class Path
+ * @property {Array} listPath - Array yang berisi simpul yang telah dilewati
+ * @property {Number} currentPos - Simpul yang sedang diperiksa
+ * @property {Number} passedpath - Jarak yang telah ditempuh
+ * @property {Number} priority - Bobot dari simpul yang sedang diperiksa
+ */
+class Path {
+    /**
+     * @constructor Konstruktor kelas Path
+     * @param {Number} currentPos 
+     * @param {Number} passedpath
+     * @param {Number} priority
+     */
+    constructor(currentPos, passedpath, priority) {
         this.listPath = [];
         this.currentPos = currentPos;
+        this.passedpath = passedpath;
+        this.priority = priority;
     }
 
-    // 2. Getter listPath
-    getListPath () {
-        return this.listPath;
+    /**
+     * @method copyPath - Mengcopy isi dari path lain ke path ini
+     * @param {Path} paths
+     */
+    copyPath(paths) {
+        for (var i = 0; i < paths.listPath.length; i++) {
+            this.listPath.push(paths.listPath[i]);
+        }
     }
 
-    // 3. Getter currentPos
-    getCurrentPos () {
-        return this.currentPos;
+    /**
+     * @method getPrio - Getter bobot dari simpul yang sedang diperiksa
+     * @returns {Number}
+     */
+    getPrio() {
+        return this.priority;
     }
 
-    // 4. Getter panjang rute
-    getRouteLength () {
-        return this.listPath.length;
+    /**
+     * @method printPath
+     * @returns {String} - Mengembalikan string yang berisi jalur yang telah ditempuh
+     */
+    printPath() {
+        let Path = "";
+        for (var i = 0; i < this.listPath.length; i++) {
+            if (i != this.listPath.length - 1) {
+                Path = Path + this.listPath[i] + " > ";
+            } else {
+                Path = Path + this.listPath[i];
+            }
+        }
+        return Path;
     }
 
-    // 5. Add new position to the path
-    addPosition (pos) {
+    /**
+     * @method addPosition - Menambahkan simpul yang telah dilewati
+     * @param {Number} pos
+     */
+    addPosition(pos) {
         this.listPath.push(pos);
         this.currentPos = pos;
     }
 }
 
-// Kelas Node, untuk inisiasi sebuah simpul yang akan dianalisis
-class Path {
-    // 1. Konstruktor
-    constructor (route, priority) {
-        this.route = route;
-        this.priority = priority;
-    }
-
-    // 2. Getter nilai
-    getRoute () {
-        return this.route;
-    }
-
-    // 3. Getter priority
-    getPrio () {
-        return this.priority;
-    }
-
-    // 4. Print path
-    printPath () {
-        let Path = "";
-        for (var i = 0; i < this.route.getRouteLength(); i++) {
-            Path = Path + this.route.listPath[i] + " > ";
-        }
-    }
-}
-
 // Kelas PQ berupa priorityqueue, untuk melakukan pemilihan simpul dengan bobot terkecil
+/**
+ * Kelas PQ, untuk melakukan pemilihan simpul dengan bobot terkecil
+ * 
+ * @class PQ
+ * @property {Array} queue - Array yang berisi simpul yang telah dilewati
+ */
 class PQ {
-    // 1. Konstruktor
-    constructor () {
+    /**
+     * @constructor
+     */
+    constructor() {
         this.queue = [];
     }
 
-    // 2. Getter panjang queue
-    getLength () {
+    /**
+     * @method getLength - Getter panjang dari queue
+     * @returns {Number}
+     */
+    getLength() {
         return this.queue.length;
     }
 
-    // 3. Getter elemen queue
-    getElmt (idx) {
+    /**
+     * @method getElmt - Getter elemen queue pada indeks idx
+     * @param {Number} idx
+     * @returns {Path}
+     */
+    getElmt(idx) {
         return this.queue[idx];
     }
 
-    // 4. Setter elemen queue
-    setElmt (idx, val) {
+    /**
+     * @method setElmt - Setter elemen queue pada indeks idx
+     * @param {Number} idx
+     * @param {Path} val
+     */
+    setElmt(idx, val) {
         this.queue[idx] = val;
     }
 
     // 5. Swap, untuk menukar posisi
-    swap (pos1, pos2) {
+    /**
+     * @method swap - Menukar posisi elemen pada indeks pos1 dan pos2
+     * @param {Path} pos1
+     * @param {Path} pos2
+     * @returns {PQ} 
+     */
+    swap(pos1, pos2) {
         let val = this.queue[pos1];
         this.setElmt(pos1, this.getElmt(pos2));
         this.setElmt(pos2, val);
@@ -89,16 +124,22 @@ class PQ {
         return this.queue;
     }
 
-    // 6. Boolean function isEmpty
-    isEmpty () {
+    /**
+     * @returns {Boolean} - Mengembalikan true jika queue kosong
+     */
+    isEmpty() {
         return (this.getLength() == 0);
     }
 
-    // 7. Enquque, prosedur untuk menambahkan antrian
-    // Ingat perlu juga untuk mempertimbangkan prioritas
-    enqueue (newPath) {
+    /**
+     * @method enqueue - Menambahkan elemen ke dalam queue
+     * 
+     * Ingat perlu mempertimbangkan prioritas
+     * @param {Path} newPath
+     */
+    enqueue(newPath) {
         var check = false;
-  
+
         // Menemukan lokasi yang tepat untuk insert
         for (var i = 0; i < this.getLength(); i++) {
             if (this.getElmt(i).getPrio() > newPath.getPrio()) {
@@ -108,16 +149,20 @@ class PQ {
                 break;
             }
         }
-    
+
         // Kalo semua lebih kecil, insert last
         if (!check) {
             this.queue.push(newPath);
         }
     }
 
-    // 8. Dequeue, prosedur untuk menghapus elemen dari antrian prioritas
-    // Ingat perlu mempertimbangkan prioritas
-    dequeue () {
+    /**
+     * @method dequeue - Menghapus elemen dengan bobot terkecil
+     * 
+     * Ingat perlu mempertimbangkan prioritas
+     * @returns {Path} - Mengembalikan simpul dengan bobot terkecil
+     */
+    dequeue() {
         if (this.isEmpty()) {
             return "PrioQueue kosong";
         } else {
@@ -125,17 +170,18 @@ class PQ {
         }
     }
 }
+
 /**
  * Fungsi heuristics, untuk melakukan kalkulasi nilai h(n)
  * Yaitu straight line distance dari simpul n ke finish
  * Inspired by https://www.geeksforgeeks.org/program-distance-two-points-earth/
  * 
  * @function heuristics
- * @param {Object[]} posList daftar posisi
- * @param {int} final posisi akhir
- * @param {int} initial posisi awal
- */ 
-function heuristics (posList, final, initial) {
+ * @param {Array} posList - Array yang berisi informasi posisi
+ * @param {Number} final - Indeks posisi akhir
+ * @param {Number} initial - Indeks posisi awal
+ */
+function heuristics(posList, final, initial) {
     // Mengambil informasi dari masukan
     // Posisi awal
     let lintang1 = posList[initial].lintang * Math.PI / 180;
@@ -151,24 +197,25 @@ function heuristics (posList, final, initial) {
 
     // Haversine formula
     let a = Math.pow(Math.sin(dLintang / 2), 2)
-            + Math.cos(lintang1) * Math.cos(lintang2)
-            * Math.pow(Math.sin(dBujur / 2),2);
+        + Math.cos(lintang1) * Math.cos(lintang2)
+        * Math.pow(Math.sin(dBujur / 2), 2);
     let c = 2 * Math.asin(Math.sqrt(a));
 
     return r * c;
 }
 
 /**
- * @function isAStarDone 
- * @description Fungsi untuk mengecek apakah A* sudah selesai
- * @param {PQ} listActiveNode
- * @param {int} finish
- * @returns {boolean}
+ * Fungsi isAStarDone, untuk mengecek apakah simpul finish sudah ada di listActiveNode
+ * 
+ * @function isAStarDone
+ * @param {PQ} listActiveNode - List simpul yang masih aktif
+ * @param {Number} finish - Indeks posisi akhir
+ * @returns {Boolean} - Mengembalikan true jika simpul finish sudah ada di listActiveNode
  */
-function isAStarDone (listActiveNode, finish) {
+function isAStarDone(listActiveNode, finish) {
     let temp = false;
     for (var i = 0; i < listActiveNode.getLength(); i++) {
-        if (listActiveNode.getElmt(i).getRoute().getCurrentPos() == finish) {
+        if (listActiveNode.getElmt(i).currentPos == finish) {
             temp = true;
             finalPath = listActiveNode.getElmt(i);
             break;
@@ -179,24 +226,24 @@ function isAStarDone (listActiveNode, finish) {
 }
 
 /**
- * Fungsi untuk mendapatkan simpul yang akan diekspansi
+ * Fungsi getExpand, untuk mendapatkan simpul yang dapat di-expand
  * 
  * @function getExpand
- * @param {int} position posisi simpul yang akan diekspansi
- * @param {int[][]} adjMatrix matriks adjacency
- * @param {int[]} expanded simpul yang sudah pernah diekspansi
- * @returns {int[]} simpul yang akan diekspansi
+ * @param {Number} position - Indeks posisi yang akan dicek
+ * @param {Number[][]} adjMatrix - Matriks adjacency
+ * @param {Number[]} cek - List simpul yang sudah dicek
  */
-function getExpand (position, adjMatrix, expanded) {
+function getExpand(position, adjMatrix, cek) {
     let expandNode = [];
     for (var i = 0; i < adjMatrix[0].length; i++) {
-        if (adjMatrix[position - 1][i] != -1 && !expanded.includes(adjMatrix[position - 1][i])) {
+        if (adjMatrix[position - 1][i] != -1 && !cek.includes(i + 1)) {
             expandNode.push(i);
         }
     }
 
     return expandNode;
 }
+
 /**
  * Fungsi AStar, menjalankan algoritma A*.
  * prioritas berdasarkan f(n) = g(n) + h(n)
@@ -209,17 +256,15 @@ function getExpand (position, adjMatrix, expanded) {
  * @param {int[][]} adjMatrix matriks adjacency
  * @param {int[]} posList daftar posisi
  */
-function AStar (start, finish, adjMatrix, posList) {
+function AStar(start, finish, adjMatrix, posList) {
     // Instansiasi simpul yang udah pernah kena ekspan
-    let expanded = [];
-    expanded.push(start);
+    let sudahdicek = [];
+    sudahdicek.push(start);
     // Inisiasi posisi awal
-    let currentPos = start;
-    // Memasukkan posisi awal ke rute baru
-    let initialRoute = new Route();
-    initialRoute.addPosition(currentPos);
-    // Memasukkan rute baru ke jalur awal
-    let initialPath = new Path(initialRoute, 0 + heuristics(posList, finish, start));
+    let current = start;
+    // Membuat sebuah jalur awal, inisiasi peta
+    let initialPath = new Path(current, 0, 0 + heuristics(posList, finish, start));
+    initialPath.listPath.push(current);
     // Memasukkan jalur awal ke antrian simpul aktif
     let listActiveNode = new PQ();
     listActiveNode.enqueue(initialPath);
@@ -227,75 +272,69 @@ function AStar (start, finish, adjMatrix, posList) {
     // Selama belum ada rute yang mencapai finish
     while (!isAStarDone(listActiveNode, finish)) {
         // Dequeue untuk ambil rute paling depan
-        initialPath = listActiveNode.dequeue();
-        // Ambil rute saat ini
-        initialRoute = initialPath.getRoute();
+        let Paths = listActiveNode.dequeue();
         // Ubah posisi titik analisis saat ini
-        currentPos = initialRoute.getCurrentPos();
-        expanded.push(currentPos);
+        current = Paths.currentPos;
+        if (!sudahdicek.includes(current)) {
+            sudahdicek.push(current);
+        }
         // Cari semua ekspan dari titik ini
-        let expandNode = getExpand(currentPos, adjMatrix, expanded);
+        let expandNode = getExpand(current, adjMatrix, sudahdicek);
         for (var i = 0; i < expandNode.length; i++) {
-            // Instansiasi rute baru yang ditambahkan petak baru
-            let newRoute = initialRoute;
-            newRoute.addPosition(expandNode[i] + 1);
             // Insiasi path baru yang ditambahkan rute sebelumnya
-            gn = adjMatrix[currentPos - 1][expandNode[i]];
-            hn = heuristics(posList, finish, currentPos);
-            let newPath = new Path(newRoute, gn + hn);
+            gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+            hn = heuristics(posList, finish, expandNode[i] + 1);
+            let newPath = new Path(expandNode[i] + 1, gn, gn + hn);
+            newPath.copyPath(Paths);
+            newPath.addPosition(expandNode[i] + 1);
             listActiveNode.enqueue(newPath);
         }
     }
 }
 
-
 /**
- * Melakukan United Cost Search untuk mencari jalur terpendek dari start ke finish
- * prioritas berdasarkan g(n) = jarak dari start ke n
+ * Fungsi UCS, menjalankan algoritma UCS.
  * 
- * @function UCS : United Cost Search
- * @param {int} start simpul awal
- * @param {int} finish simpul akhir
- * @param {int[][]} adjMatrix matriks adjacency
- * @param {int[]} posList daftar posisi
+ * @function UCS
+ * @param {Number} start - posisi awal
+ * @param {Number} finish - posisi akhir
+ * @param {Number[][]} adjMatrix - matriks adjacency
  */
-function UCS (start, finish, adjMatrix, posList) {
-    // Inisiasi simpul yang udah pernah kena ekspan
-    let expanded = [];
+function UCS(start, finish, adjMatrix) {
+    // Instansiasi simpul yang udah pernah kena ekspan
+    let sudahdicek = [];
+    sudahdicek.push(start);
     // Inisiasi posisi awal
-    let currentPos = start;
-    // Inisiasi posisi awal ke rute baru
-    let initialRoute = new Route();
-    initialRoute.addPosition(currentPos);
-    // Inisiasi rute baru ke jalur awal
-    let initialPath = new Path(initialRoute, 0);
-    // Inisiasi jalur awal ke antrian simpul aktif
+    let current = start;
+    // Membuat sebuah jalur awal, inisiasi peta
+    let initialPath = new Path(current, 0, 0);
+    initialPath.listPath.push(current);
+    // Memasukkan jalur awal ke antrian simpul aktif
     let listActiveNode = new PQ();
     listActiveNode.enqueue(initialPath);
 
     // Selama belum ada rute yang mencapai finish
     while (true) {
         // Dequeue untuk ambil rute paling depan
-        initialPath = listActiveNode.dequeue();
-        // Ambil rute saat ini
-        initialRoute = initialPath.getRoute();
+        let Paths = listActiveNode.dequeue();
         // Ubah posisi titik analisis saat ini
-        currentPos = initialRoute.getCurrentPos();
-        expanded.push(currentPos);
+        current = Paths.currentPos;
+        if (!sudahdicek.includes(current)) {
+            sudahdicek.push(current);
+        }
         // Cek apakah sudah sampai finish
-        if (currentPos == finish) {
-            finalPath = initialPath;
+        if (current == finish) {
+            finalPath = Paths;
             break;
         }
         // Cari semua ekspan dari titik ini
-        let expandNode = getExpand(currentPos, adjMatrix, expanded);
+        let expandNode = getExpand(current, adjMatrix, sudahdicek);
         for (var i = 0; i < expandNode.length; i++) {
-            // Instansiasi rute baru yang ditambahkan petak baru
-            let newRoute = initialRoute;
-            newRoute.addPosition(expandNode[i] + 1);
             // Insiasi path baru yang ditambahkan rute sebelumnya
-            gn = adjMatrix[currentPos - 1][expandNode[i]];
-            let newPath = new Path(newRoute, gn);
+            gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+            let newPath = new Path(expandNode[i] + 1, gn, gn);
+            newPath.copyPath(Paths);
+            newPath.addPosition(expandNode[i] + 1);
             listActiveNode.enqueue(newPath);
         }
     }
