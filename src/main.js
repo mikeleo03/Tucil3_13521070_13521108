@@ -110,6 +110,7 @@ function readFile () {
   function initiateSearch (e) {
     // Informasi dari masukan
     infoParsed = JSON.parse(e.target.result.toString());
+    posList = infoParsed.posList;
     adjMatrix = infoParsed.adjMatrix;
 
     tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
@@ -270,7 +271,7 @@ function saveFile() {
 }
 
 // Melakukan pemrosesan secara A*
-function doAStar () {
+function doAlgo (flag) {
   // Validasi apakah peta sudah diload
   if (adjMatrix.length == 0 && posList.length == 0) {
     alert("You haven't load any map yet!");
@@ -279,9 +280,13 @@ function doAStar () {
     initialPosition = document.getElementsByClassName('init-pos')[0].value;
     finalPosition = document.getElementsByClassName('final-pos')[0].value;
 
-    // Melakukan pemrosesan menggunakan A*
-    AStar(parseInt(initialPosition) + 1, parseInt(finalPosition) + 1, adjMatrix, posList);
-    
+    if (flag == 1) {
+      // Melakukan pemrosesan menggunakan A*
+      AStar(parseInt(initialPosition) + 1, parseInt(finalPosition) + 1, adjMatrix, posList);
+    } else {
+      // Melakukan pemrosesan menggunakan UCS
+      UCS(parseInt(initialPosition) + 1, parseInt(finalPosition) + 1, adjMatrix); 
+    }
     // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
     elmtPath = document.getElementsByClassName('path')[0];
     if (finalPath === null) {
@@ -289,8 +294,13 @@ function doAStar () {
       elmtPath.innerHTML = '<p>Path not found!</p>';
     } else {
       // Jika ada, cetak path
-      elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
-      elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
+      if (flag == 1) {
+        elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
+        elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;
+      } else {
+        elmtPath.innerHTML = `<h4>Result using UCS Algorithm</h4>`;  
+        elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
+      }  
 
       // Ilustrasikan dalam peta masukan
       let pointPos = [];
@@ -500,6 +510,54 @@ function AStar (start, finish, adjMatrix, posList) {
           gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
           hn = heuristics(posList, finish, expandNode[i] + 1);
           let newPath = new Path(expandNode[i] + 1, gn, gn + hn);
+          newPath.copyPath(Paths);
+          newPath.addPosition(expandNode[i] + 1);
+          listActiveNode.enqueue(newPath);
+      }
+  }
+}
+
+/**
+ * Fungsi UCS, menjalankan algoritma UCS.
+ * 
+ * @function UCS
+ * @param {Number} start - posisi awal
+ * @param {Number} finish - posisi akhir
+ * @param {Number[][]} adjMatrix - matriks adjacency
+ */
+function UCS(start, finish, adjMatrix) {
+  // Instansiasi simpul yang udah pernah kena ekspan
+  let sudahdicek = [];
+  sudahdicek.push(start);
+  // Inisiasi posisi awal
+  let current = start;
+  // Membuat sebuah jalur awal, inisiasi peta
+  let initialPath = new Path(current, 0, 0);
+  initialPath.listPath.push(current);
+  // Memasukkan jalur awal ke antrian simpul aktif
+  let listActiveNode = new PQ();
+  listActiveNode.enqueue(initialPath);
+
+  // Selama belum ada rute yang mencapai finish
+  while (true) {
+      // Dequeue untuk ambil rute paling depan
+      let Paths = listActiveNode.dequeue();
+      // Ubah posisi titik analisis saat ini
+      current = Paths.currentPos;
+      if (!sudahdicek.includes(current)) {
+          sudahdicek.push(current);
+      }
+      // Cek apakah sudah sampai finish
+      if (current == finish) {
+          finalPath = Paths;
+          break;
+      }
+      // Cari semua ekspan dari titik ini
+      let expandNode = getExpand(current, adjMatrix, sudahdicek);
+      for (var i = 0; i < expandNode.length; i++) {
+          // Insiasi path baru yang ditambahkan rute sebelumnya
+          gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+          let newPath = new Path(expandNode[i] + 1, gn, gn);
           newPath.copyPath(Paths);
           newPath.addPosition(expandNode[i] + 1);
           listActiveNode.enqueue(newPath);
