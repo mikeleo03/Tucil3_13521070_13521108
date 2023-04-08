@@ -24,9 +24,13 @@ window.onload = function() {
   maps.on('dblclick', function(e) {
     // Melakukan penanganan terhadap marker
     let marker = L.marker(e.latlng, {draggable: 'true'});
+    var nodeName = prompt("What is the node name?");  
+    while (nodeName == "") {  
+      var nodeName = prompt("What is the node name?"); 
+    } 
     
     // Membuat sebuah simpul baru dalam json
-    let newNode = {"id": (posList.length + 1).toString(), "nama": "simpul baru", "lintang": e.latlng.lat, "bujur": e.latlng.lng};
+    let newNode = {"id": (posList.length + 1).toString(), "nama": nodeName, "lintang": e.latlng.lat, "bujur": e.latlng.lng};
     marker.id = newNode.id; // Update ID
     marker.bindPopup(`${newNode.id} - ${newNode.nama}`); // Initialize popup
     maps.addLayer(marker);
@@ -218,51 +222,87 @@ function chooseNode () {
 
 // Menambahkan relasi dalam graf
 function addRelation () {
-  // Ambil value dari masukan pengguna via class HTML
-  let init_rels = document.getElementsByClassName('init-rels')[0].value - 1;
-  let final_rels = document.getElementsByClassName('final-rels')[0].value - 1;
+  if (adjMatrix.length == 0 && posList.length == 0) {
+    alert("You haven't load any map yet!");
+  } else {
+    // Ambil value dari masukan pengguna via class HTML
+    let init_rels = document.getElementsByClassName('init-rels')[0].value - 1;
+    let final_rels = document.getElementsByClassName('final-rels')[0].value - 1;
 
-  // Gunakan fungsi heuristics untuk mengambil euclidean dist
-  let distance = heuristics(posList, final_rels, init_rels).toFixed(3);
+    if (init_rels == final_rels) {
+      alert("You can't add a relation to node itself");
+    } else if (adjMatrix[init_rels][final_rels] != -1) {
+      alert("The relation already exist");
+    } else {
+      // Gunakan fungsi heuristics untuk mengambil euclidean dist
+      let distance = heuristics(posList, final_rels + 1, init_rels + 1).toFixed(3);
 
-  // Isi matriks ketetanggan
-  adjMatrix[init_rels][final_rels] = Number(distance);
-  adjMatrix[final_rels][init_rels] = Number(distance);
+      // Isi matriks ketetanggan
+      adjMatrix[init_rels][final_rels] = Number(distance);
+      adjMatrix[final_rels][init_rels] = Number(distance);
 
-  // Additional function to consider
-  tablePathControl();
-  drawPathLine();
+      // Additional function to consider
+      tablePathControl();
+      drawPathLine();
+    }
+  }
+}
+
+function saveFile() {
+
+  // Validasi apakah sudah pernah load map atau belum
+  if (adjMatrix.length == 0 && posList.length == 0) {
+    alert("You haven't load any map yet!");
+  } else {
+    // Instansiasi objek yang akan disimpan dalam JSON
+    let saveObject = {posList: posList, adjMatrix: adjMatrix};
+
+    // Melakukan konversi balik masukan ke JSON
+    let dataHref = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saveObject)); 
+    let downloader = document.createElement('a');
+
+    // Menyimpan file dalam default map.json
+    downloader.setAttribute("href", dataHref);
+    downloader.setAttribute("download", "map.json");
+    downloader.click();
+    downloader.remove();
+  }
 }
 
 // Melakukan pemrosesan secara A*
 function doAStar () {
-  // Inisiasi posisi
-  initialPosition = document.getElementsByClassName('init-pos')[0].value;
-  finalPosition = document.getElementsByClassName('final-pos')[0].value;
-
-  // Melakukan pemrosesan menggunakan A*
-  AStar(parseInt(initialPosition), parseInt(finalPosition), adjMatrix, posList);
-  
-  // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
-  elmtPath = document.getElementsByClassName('path')[0];
-  if (finalPath === null) {
-    // Jika panjang path kosong, maka tidak ada jalur
-    elmtPath.innerHTML = '<p>Path not found!</p>';
+  // Validasi apakah peta sudah diload
+  if (adjMatrix.length == 0 && posList.length == 0) {
+    alert("You haven't load any map yet!");
   } else {
-    // Jika ada, cetak path
-    elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
-    elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
+    // Inisiasi posisi
+    initialPosition = document.getElementsByClassName('init-pos')[0].value;
+    finalPosition = document.getElementsByClassName('final-pos')[0].value;
 
-    // Ilustrasikan dalam peta masukan
-    let pointPos = [];
-    drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
-    for(let i = 0; i < finalPath.listPath.length; i++) {
-      pointPos.push(markers[finalPath.listPath[i]-1].getLatLng());
+    // Melakukan pemrosesan menggunakan A*
+    AStar(parseInt(initialPosition), parseInt(finalPosition), adjMatrix, posList);
+    
+    // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
+    elmtPath = document.getElementsByClassName('path')[0];
+    if (finalPath === null) {
+      // Jika panjang path kosong, maka tidak ada jalur
+      elmtPath.innerHTML = '<p>Path not found!</p>';
+    } else {
+      // Jika ada, cetak path
+      elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
+      elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;  
+
+      // Ilustrasikan dalam peta masukan
+      let pointPos = [];
+      drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
+      for(let i = 0; i < finalPath.listPath.length; i++) {
+        pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
+      }
+
+      let line = L.polyline(pointPos, {color: 'red'});
+      lines.push(line);
+      maps.addLayer(line);
     }
-
-    let line = L.polyline(pointPos, {color: 'red'});
-    lines.push(line);
-    maps.addLayer(line);
   }
 }
 
@@ -383,11 +423,11 @@ class PQ {
 function heuristics (posList, final, initial) {
   // Mengambil informasi dari masukan
   // Posisi awal
-  let lintang1 = posList[initial].lintang * Math.PI / 180;
-  let bujur1 = posList[initial].bujur * Math.PI / 180;
+  let lintang1 = posList[initial - 1].lintang * Math.PI / 180;
+  let bujur1 = posList[initial - 1].bujur * Math.PI / 180;
   // Posisi akhir
-  let lintang2 = posList[final].lintang * Math.PI / 180;
-  let bujur2 = posList[final].bujur * Math.PI / 180;
+  let lintang2 = posList[final - 1].lintang * Math.PI / 180;
+  let bujur2 = posList[final - 1].bujur * Math.PI / 180;
 
   // Perhitungan
   let r = 6371
