@@ -5,6 +5,7 @@
 // Deklarasi variabel global
 let maps;
 let finalPath;
+let realmap;
 let adjMatrix = [];
 let posList = [];
 let markers = [];
@@ -68,6 +69,7 @@ window.onload = function() {
 // Penerimaan dan pembaacan konfigurasi peta bonus dari masukan
 function readFileBonus () {
   // Beberapa kasus ujung penerimaan file
+  realmap = true;
   let input = document.getElementById('inputFile');
   if (!input.files[0]) {
     alert("Please select a file!");
@@ -95,6 +97,7 @@ function readFileBonus () {
 
 // Penerimaan dan pembaacan konfigurasi peta dari masukan
 function readFile () {
+  realmap = false;
   // Beberapa kasus ujung penerimaan file
   let input = document.getElementById('inputFile');
   if (!input.files[0]) {
@@ -250,7 +253,6 @@ function addRelation () {
 }
 
 function saveFile() {
-
   // Validasi apakah sudah pernah load map atau belum
   if (adjMatrix.length == 0 && posList.length == 0) {
     alert("You haven't load any map yet!");
@@ -303,15 +305,20 @@ function doAlgo (flag) {
       }  
 
       // Ilustrasikan dalam peta masukan
-      let pointPos = [];
-      drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
-      for(let i = 0; i < finalPath.listPath.length; i++) {
-        pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
-      }
+      // Jika peta asli
+      if (realmap) {
+        let pointPos = [];
+        drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
+        for(let i = 0; i < finalPath.listPath.length; i++) {
+          pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
+        }
 
-      let line = L.polyline(pointPos, {color: 'red'});
-      lines.push(line);
-      maps.addLayer(line);
+        let line = L.polyline(pointPos, {color: 'red'});
+        lines.push(line);
+        maps.addLayer(line);
+      } else {
+
+      }
     }
   }
 }

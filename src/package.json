@@ -10,5 +10,9 @@
   },
   "devDependencies": {
     "vite": "^4.2.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "graph-js": "^0.2.0"
   }
 }
