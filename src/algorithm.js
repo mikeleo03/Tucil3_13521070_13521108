@@ -125,10 +125,16 @@ class PQ {
         }
     }
 }
-
-// Fungsi heuristics, untuk melakukan kalkulasi nilai h(n)
-// Yaitu straight line distance dari simpul n ke finish
-// Inspired by https://www.geeksforgeeks.org/program-distance-two-points-earth/
+/**
+ * Fungsi heuristics, untuk melakukan kalkulasi nilai h(n)
+ * Yaitu straight line distance dari simpul n ke finish
+ * Inspired by https://www.geeksforgeeks.org/program-distance-two-points-earth/
+ * 
+ * @function heuristics
+ * @param {Object[]} posList daftar posisi
+ * @param {int} final posisi akhir
+ * @param {int} initial posisi awal
+ */ 
 function heuristics (posList, final, initial) {
     // Mengambil informasi dari masukan
     // Posisi awal
@@ -156,7 +162,7 @@ function heuristics (posList, final, initial) {
  * @function isAStarDone 
  * @description Fungsi untuk mengecek apakah A* sudah selesai
  * @param {PQ} listActiveNode
- * @param {_} finish
+ * @param {int} finish
  * @returns {boolean}
  */
 function isAStarDone (listActiveNode, finish) {
