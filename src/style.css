@@ -22,12 +22,14 @@ nav {
   display: flex;
   justify-content: space-between;
   font-size: 1.5rem;
+  padding-bottom: 0.5rem;
 }
 
 nav a {
   text-decoration: none;
   padding: 1rem;
   color: white;
+  padding-bottom: 0.5rem;
 }
 
 nav a:hover {
@@ -47,6 +49,7 @@ nav ul {
   font-weight: bold;
   font-size: 1.5rem;
   padding: 1.5rem;
+  margin-bottom: 0.1rem;
 }
 
 /* main body */
@@ -90,7 +93,7 @@ nav ul {
 .map {
   padding: 0.1rem 0.5rem;
   margin-left: 3.5rem;
-  margin-right: -14rem;
+  margin-right: -20rem;
 }
 
 .path {
@@ -126,16 +129,60 @@ h4 {
   margin-top: 0.5rem;
 }
 
+.button:hover {
+  background-color: #29762b; /* Green */
+  cursor: pointer;
+}
+
+.button-down {
+  border-radius: 4px;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+.button-down span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button-down span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button-down:hover span {
+  padding-right: 25px;
+  cursor: pointer;
+}
+
+.button-down:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
 .lengthinput {
-  width: 7rem;
+  width: 10rem;
   height: 2rem;
-  padding-left: 1rem;
+  padding-left: 0.5rem;
 }
 
 .lengthinput2 {
-  width: 5rem;
+  width: 7rem;
   height: 2rem;
-  padding-left: 1rem;
+  padding-left: 0.5rem;
 }
 
 /* Table styling */
@@ -143,8 +190,9 @@ table {
   border-collapse: collapse;
 	text-align: center;
 	vertical-align: middle;
-  margin-left: 2.5rem;
+  margin-left: 1rem;
   margin-top: 1rem;
+  max-height: 2rem;
 }
 
 thead {
@@ -152,6 +200,11 @@ thead {
 	color: white;
 	font-size: 0.875rem;
 	letter-spacing: 2%;
+}
+
+#pathContent {
+  height: 2rem;
+  overflow: scroll;
 }
 
 tbody tr:nth-child(odd) {
@@ -163,8 +216,8 @@ tbody tr:nth-child(even) {
 }
 
 th, td {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 15px;
+  padding-right: 15px;
   padding-top: 10px;
   padding-bottom: 10px;
 }

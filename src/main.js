@@ -212,11 +212,11 @@ function chooseNode () {
   relAkhir.innerHTML = '';
 
   // Menambahkan jumlah opsi
-  for (var i = 1; i <= adjMatrix.length; i++){
-    pilAwal.innerHTML += `<option value="${i}">${i.toString()}</option>`
-    pilAkhir.innerHTML += `<option value="${i}">${i.toString()}</option>`
-    relAwal.innerHTML += `<option value="${i}">${i.toString()}</option>`
-    relAkhir.innerHTML += `<option value="${i}">${i.toString()}</option>`
+  for (var i = 0; i < adjMatrix.length; i++){
+    pilAwal.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
+    pilAkhir.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
+    relAwal.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
+    relAkhir.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
   }
 }
 
@@ -226,8 +226,8 @@ function addRelation () {
     alert("You haven't load any map yet!");
   } else {
     // Ambil value dari masukan pengguna via class HTML
-    let init_rels = document.getElementsByClassName('init-rels')[0].value - 1;
-    let final_rels = document.getElementsByClassName('final-rels')[0].value - 1;
+    let init_rels = document.getElementsByClassName('init-rels')[0].value;
+    let final_rels = document.getElementsByClassName('final-rels')[0].value;
 
     if (init_rels == final_rels) {
       alert("You can't add a relation to node itself");
@@ -235,7 +235,7 @@ function addRelation () {
       alert("The relation already exist");
     } else {
       // Gunakan fungsi heuristics untuk mengambil euclidean dist
-      let distance = heuristics(posList, final_rels + 1, init_rels + 1).toFixed(3);
+      let distance = heuristics(posList, parseInt(final_rels) + 1, parseInt(init_rels) + 1).toFixed(3);
 
       // Isi matriks ketetanggan
       adjMatrix[init_rels][final_rels] = Number(distance);
@@ -280,7 +280,7 @@ function doAStar () {
     finalPosition = document.getElementsByClassName('final-pos')[0].value;
 
     // Melakukan pemrosesan menggunakan A*
-    AStar(parseInt(initialPosition), parseInt(finalPosition), adjMatrix, posList);
+    AStar(parseInt(initialPosition) + 1, parseInt(finalPosition) + 1, adjMatrix, posList);
     
     // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
     elmtPath = document.getElementsByClassName('path')[0];
