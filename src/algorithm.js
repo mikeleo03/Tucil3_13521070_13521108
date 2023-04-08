@@ -152,6 +152,13 @@ function heuristics (posList, final, initial) {
     return r * c;
 }
 
+/**
+ * @function isAStarDone 
+ * @description Fungsi untuk mengecek apakah A* sudah selesai
+ * @param {PQ} listActiveNode
+ * @param {_} finish
+ * @returns {boolean}
+ */
 function isAStarDone (listActiveNode, finish) {
     let temp = false;
     for (var i = 0; i < listActiveNode.getLength(); i++) {
@@ -165,6 +172,15 @@ function isAStarDone (listActiveNode, finish) {
     return temp;
 }
 
+/**
+ * Fungsi untuk mendapatkan simpul yang akan diekspansi
+ * 
+ * @function getExpand
+ * @param {int} position posisi simpul yang akan diekspansi
+ * @param {int[][]} adjMatrix matriks adjacency
+ * @param {int[]} expanded simpul yang sudah pernah diekspansi
+ * @returns {int[]} simpul yang akan diekspansi
+ */
 function getExpand (position, adjMatrix, expanded) {
     let expandNode = [];
     for (var i = 0; i < adjMatrix[0].length; i++) {
@@ -175,11 +191,18 @@ function getExpand (position, adjMatrix, expanded) {
 
     return expandNode;
 }
-
-// Fungsi AStar, menjalankan algoritma A*
-// prioritas berdasarkan f(n) = g(n) + h(n)
-// dengan g(n) adalah jarak dari start ke n
-// h(n) adalah straight line distance dari simpul n ke finish
+/**
+ * Fungsi AStar, menjalankan algoritma A*.
+ * prioritas berdasarkan f(n) = g(n) + h(n)
+ * dengan g(n) adalah jarak dari start ke n,
+ * h(n) adalah straight line distance dari simpul n ke finish
+ * 
+ * @function AStar
+ * @param {int} start simpul awal
+ * @param {int} finish simpul akhir
+ * @param {int[][]} adjMatrix matriks adjacency
+ * @param {int[]} posList daftar posisi
+ */
 function AStar (start, finish, adjMatrix, posList) {
     // Instansiasi simpul yang udah pernah kena ekspan
     let expanded = [];
@@ -214,6 +237,59 @@ function AStar (start, finish, adjMatrix, posList) {
             gn = adjMatrix[currentPos - 1][expandNode[i]];
             hn = heuristics(posList, finish, currentPos);
             let newPath = new Path(newRoute, gn + hn);
+            listActiveNode.enqueue(newPath);
+        }
+    }
+}
+
+
+/**
+ * Melakukan United Cost Search untuk mencari jalur terpendek dari start ke finish
+ * prioritas berdasarkan g(n) = jarak dari start ke n
+ * 
+ * @function UCS : United Cost Search
+ * @param {int} start simpul awal
+ * @param {int} finish simpul akhir
+ * @param {int[][]} adjMatrix matriks adjacency
+ * @param {int[]} posList daftar posisi
+ */
+function UCS (start, finish, adjMatrix, posList) {
+    // Inisiasi simpul yang udah pernah kena ekspan
+    let expanded = [];
+    // Inisiasi posisi awal
+    let currentPos = start;
+    // Inisiasi posisi awal ke rute baru
+    let initialRoute = new Route();
+    initialRoute.addPosition(currentPos);
+    // Inisiasi rute baru ke jalur awal
+    let initialPath = new Path(initialRoute, 0);
+    // Inisiasi jalur awal ke antrian simpul aktif
+    let listActiveNode = new PQ();
+    listActiveNode.enqueue(initialPath);
+
+    // Selama belum ada rute yang mencapai finish
+    while (true) {
+        // Dequeue untuk ambil rute paling depan
+        initialPath = listActiveNode.dequeue();
+        // Ambil rute saat ini
+        initialRoute = initialPath.getRoute();
+        // Ubah posisi titik analisis saat ini
+        currentPos = initialRoute.getCurrentPos();
+        expanded.push(currentPos);
+        // Cek apakah sudah sampai finish
+        if (currentPos == finish) {
+            finalPath = initialPath;
+            break;
+        }
+        // Cari semua ekspan dari titik ini
+        let expandNode = getExpand(currentPos, adjMatrix, expanded);
+        for (var i = 0; i < expandNode.length; i++) {
+            // Instansiasi rute baru yang ditambahkan petak baru
+            let newRoute = initialRoute;
+            newRoute.addPosition(expandNode[i] + 1);
+            // Insiasi path baru yang ditambahkan rute sebelumnya
+            gn = adjMatrix[currentPos - 1][expandNode[i]];
+            let newPath = new Path(newRoute, gn);
             listActiveNode.enqueue(newPath);
         }
     }
