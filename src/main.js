@@ -2,8 +2,8 @@
 
 // Deklarasi variabel global
 let maps;
-let finalPath;
-let realmap;
+let newNodecount = 0;
+let finalPath = [];
 let adjMatrix = [];
 let posList = [];
 let markers = [];
@@ -60,6 +60,9 @@ window.onload = function() {
 
     // Tangani untuk masukan
     chooseNode();
+
+    // Tambah jumlah simpul baru
+    newNodecount += 1;
     return e;
   })
 }
@@ -67,7 +70,6 @@ window.onload = function() {
 // Penerimaan dan pembaacan konfigurasi peta dari masukan
 function readFile () {
   // Beberapa kasus ujung penerimaan file
-  realmap = true;
   let input = document.getElementById('inputFile');
   if (!input.files[0]) {
     alert("Please select a file!");
@@ -246,6 +248,22 @@ function saveFile() {
 
 // Melakukan pemrosesan secara A*
 function doAlgo (flag) {
+  // Ubah path yang sebelumnya merah jadi ijo
+  // Ilustrasikan dalam peta masukan
+  if (finalPath.length != 0) {
+    let pointPos = [];
+    for(let i = 0; i < finalPath.listPath.length; i++) {
+      pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
+    }
+
+    let line = L.polyline(pointPos, {color: 'green'});
+    lines.push(line);
+    maps.addLayer(line);
+  }
+  // Kosongkan dulu isi finalPath sebelum proses selanjutnya
+  finalPath = [];
+
+  // Baru mulai proses
   // Validasi apakah peta sudah diload
   if (adjMatrix.length == 0 && posList.length == 0) {
     alert("You haven't load any map yet!");
@@ -263,13 +281,13 @@ function doAlgo (flag) {
     }
     // Mencetak hasil pada layar, lakukan pemrosesan pada kelas tertentu
     elmtPath = document.getElementsByClassName('path')[0];
-    if (finalPath === null) {
+    if (finalPath.length == 0) {
       // Jika panjang path kosong, maka tidak ada jalur
       elmtPath.innerHTML = '<p>Path not found!</p>';
     } else {
       // Jika ada, cetak path
       if (flag == 1) {
-        elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;  
+        elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;
         elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;
       } else {
         elmtPath.innerHTML = `<h4>Result using UCS Algorithm</h4>`;  
@@ -277,20 +295,15 @@ function doAlgo (flag) {
       }  
 
       // Ilustrasikan dalam peta masukan
-      // Jika peta asli
-      if (realmap) {
-        let pointPos = [];
-        drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
-        for(let i = 0; i < finalPath.listPath.length; i++) {
-          pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
-        }
-
-        let line = L.polyline(pointPos, {color: 'red'});
-        lines.push(line);
-        maps.addLayer(line);
-      } else {
-
+      let pointPos = [];
+      drawPathLine(); // jangan lupa redraw buat tiap ganti masukan
+      for(let i = 0; i < finalPath.listPath.length; i++) {
+        pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
       }
+
+      let line = L.polyline(pointPos, {color: 'red'});
+      lines.push(line);
+      maps.addLayer(line);
     }
   }
 }
@@ -484,14 +497,19 @@ function AStar (start, finish, adjMatrix, posList) {
       }
       // Cari semua ekspan dari titik ini
       let expandNode = getExpand(current, adjMatrix, sudahdicek);
-      for (var i = 0; i < expandNode.length; i++) {
-          // Insiasi path baru yang ditambahkan rute sebelumnya
-          gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
-          hn = heuristics(posList, finish, expandNode[i] + 1);
-          let newPath = new Path(expandNode[i] + 1, gn, gn + hn);
-          newPath.copyPath(Paths);
-          newPath.addPosition(expandNode[i] + 1);
-          listActiveNode.enqueue(newPath);
+      if (expandNode.length == 0 && (adjMatrix.length <= sudahdicek.length + newNodecount || sudahdicek.length == 1)) {
+        alert("There's no path to that node");
+        break;
+      } else {
+        for (var i = 0; i < expandNode.length; i++) {
+            // Insiasi path baru yang ditambahkan rute sebelumnya
+            gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+            hn = heuristics(posList, finish, expandNode[i] + 1);
+            let newPath = new Path(expandNode[i] + 1, gn, gn + hn);
+            newPath.copyPath(Paths);
+            newPath.addPosition(expandNode[i] + 1);
+            listActiveNode.enqueue(newPath);
+        }
       }
   }
 }
@@ -533,13 +551,18 @@ function UCS(start, finish, adjMatrix) {
       }
       // Cari semua ekspan dari titik ini
       let expandNode = getExpand(current, adjMatrix, sudahdicek);
-      for (var i = 0; i < expandNode.length; i++) {
-          // Insiasi path baru yang ditambahkan rute sebelumnya
-          gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
-          let newPath = new Path(expandNode[i] + 1, gn, gn);
-          newPath.copyPath(Paths);
-          newPath.addPosition(expandNode[i] + 1);
-          listActiveNode.enqueue(newPath);
+      if (expandNode.length == 0 && (adjMatrix.length <= sudahdicek.length + newNodecount || sudahdicek.length == 1)) {
+        alert("There's no path to that node");
+        break;
+      } else {
+        for (var i = 0; i < expandNode.length; i++) {
+            // Insiasi path baru yang ditambahkan rute sebelumnya
+            gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+            let newPath = new Path(expandNode[i] + 1, gn, gn);
+            newPath.copyPath(Paths);
+            newPath.addPosition(expandNode[i] + 1);
+            listActiveNode.enqueue(newPath);
+        }
       }
   }
 }
