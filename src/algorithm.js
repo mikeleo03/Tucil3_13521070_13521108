@@ -1,5 +1,5 @@
-/* File untuk melakukan pemrosesan terhadap simpul */
-/* Berbagai deklarasi data akan dijabarkan disini */
+/* File untuk melakukan pemrosesan terhadap data simpul */
+/* Berbagai deklarasi data dan algoritma solusi akan dijabarkan disini */
 
 /**
  * Kelas Path, untuk melakukan pemrosesan terkait data simpul analisis
