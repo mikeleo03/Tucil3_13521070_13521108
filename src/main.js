@@ -469,6 +469,13 @@ function getExpand (position, adjMatrix, cek) {
   return expandNode;
 }
 
+// Untuk mengecek apakah simpul terubung atau tidak
+function isNodeNotConnected (expandNode, sudahdicek, adjMatrix, newNodecount) {
+  return expandNode.length == 0 && 
+  ((sudahdicek.length + 1 <= adjMatrix.length || adjMatrix.length <= sudahdicek.length + newNodecount)
+  || sudahdicek.length == 1);
+}
+
 // Fungsi AStar, menjalankan algoritma A*
 // prioritas berdasarkan f(n) = g(n) + h(n)
 // dengan g(n) adalah jarak dari start ke n
@@ -497,7 +504,7 @@ function AStar (start, finish, adjMatrix, posList) {
       }
       // Cari semua ekspan dari titik ini
       let expandNode = getExpand(current, adjMatrix, sudahdicek);
-      if (expandNode.length == 0 && (adjMatrix.length <= sudahdicek.length + newNodecount || sudahdicek.length == 1)) {
+      if (isNodeNotConnected(expandNode, sudahdicek, adjMatrix, newNodecount)) {
         alert("There's no path to that node");
         break;
       } else {
@@ -551,6 +558,7 @@ function UCS(start, finish, adjMatrix) {
       }
       // Cari semua ekspan dari titik ini
       let expandNode = getExpand(current, adjMatrix, sudahdicek);
+      console.log(sudahdicek);
       if (expandNode.length == 0 && (adjMatrix.length <= sudahdicek.length + newNodecount || sudahdicek.length == 1)) {
         alert("There's no path to that node");
         break;
