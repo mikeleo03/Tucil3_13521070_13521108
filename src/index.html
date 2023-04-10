@@ -1,124 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- GoogleMap API -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-    crossorigin=""></script>
-    <!-- Menambahkan stylesheet CSS dan script Javascript -->
-    <link rel="stylesheet" href="style.css">
-    <script src="./main.js"></script>
-    <title>Tugas Kecil 3 - Strategi Algoritma</title>
-  </head>
+    <!-- Header, impor beberapa script dan stylesheet yang diperlukan -->
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- GoogleMap API -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+        <!-- Menambahkan stylesheet CSS dan script Javascript -->
+        <link rel="stylesheet" href="style.css">
+        <script src="./main.js"></script>
+        <!-- Judul Popup -->
+        <title>Tugas Kecil 3 - Strategi Algoritma</title>
+    </head>
 
-  <!-- The navbar -->
-  <nav>
-    <a href="/" class="pop">Path Finder</a>
-    <ul>
-      <li><a href="/">About</a></li>
-      <li><a href="/">Credits</a></li>
-    </ul>
-  </nav>
+    <!-- Navbar, pilihan menu -->
+    <nav>
+        <a href="/" class="pop">Path Finder</a>
+        <ul>
+            <li><a href="/">About</a></li>
+            <li><a href="/">Credits</a></li>
+        </ul>
+    </nav>
 
-  <body>
-    <div class="row">
-      <div class="column left">
-        <!-- Map section -->
-        <div id="map" class="map"></div>
-        <!-- Result section -->
-        <div class="path"></div>  
-      </div>
-      <div class="column mid">
-        <!-- Input section -->
-        <h4>Insert File</h4>
-        <div class="label">
-          <label>Insert Test Case here!</label>
-        </div>
-        <div class="inputs">
-          <input type="file" id="inputFile">
-        </div>
-        <div class="inputs">
-          <input type="button" class="button" value="Load Map" onclick="readFile();">
-        </div>
-
-        <!-- save path section -->
-        <div class="label">
-          <label>Made a change on the map?</label>
-        </div>
-        <div class="inputs">
-          <button class="button-down" onclick="saveFile();"><span>Save Current Map </span></button>
-        </div>
-
-        <!-- Node searching section -->
-        <h4>Shortest Path Searching</h4>
-        <div>
-          <!-- initial node -->
-          <div class="label">
-            <label for="instantiateInitial">Initial node</label>
-          </div>
-          <div class="inputs">
-            <select id="instantiateInitial" class="lengthinput init-pos"></select>
-          </div>
-              
-          <!-- final node -->
-          <div class="label">
-            <label for="instantiateFinal">Final node</label>
-          </div>
-          <div class="inputs">
-            <select id="instantiateFinal" class="lengthinput final-pos"></select>
-          </div>
-        </div>
-
-        <div class="inputs">
-          <input type="button" class="button" value="Process UCS" onclick="doAlgo(2);">
-          <input type="button" class="button" value="Process A*" onclick="doAlgo(1);">
-        </div>
-      </div>
-      <div class="column right">
-        <h4>Insert Relations</h4>
+    <!-- Body -->
+    <body>
         <div class="row">
-          <!-- initial node -->
-          <div class="label column">
-            <label for="relationInitial">Start node</label>
-          </div>
-          <div class="inputs column right">
-            <select id="relationInitial" class="lengthinput2 init-rels"></select>
-          </div>
-              
-          <!-- final node -->
-          <div class="label column">
-            <label for="relationFinal">Final node</label>
-          </div>
-          <div class="inputs column right">
-            <select id="relationFinal" class="lengthinput2 final-rels"></select>
-          </div>
-        </div>
-        <div class="inputs">
-          <input type="button" class="button" value="Insert Relation" onclick="addRelation();">
-        </div>
-        <h4>List of Nodes</h4>
-        <table class="table">
-          <!-- Table header -->
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Nodes</th>
-              <th scope="col">Distance</th>
-            </tr>
-          </thead>
+            <!-- Bagian kolom kiri -->
+            <div class="column left">
+                <!-- Tampilan peta -->
+                <div id="map" class="map"></div>
+                <!-- Tampilan hasil algoritma -->
+                <div class="path"></div>  
+            </div>
 
-          <!-- Table content -->
-          <tbody id="pathContent">
-          </tbody>
-          
-        </table>
-      </div>
-    </div>
-  </body>
+            <!-- Bagian kolom tengah -->
+            <div class="column mid">
+                <!-- Tambahkan masukan -->
+                <h4>Insert File</h4>
+                <!-- Tempat menambahkan kasus uji masukan -->
+                <div class="label">
+                    <label>Insert Test Case here!</label>
+                </div>
+                <div class="inputs">
+                    <input type="file" id="inputFile">
+                </div>
 
+                <!-- Pembaacaan terhadap file, menjalankan fungsi readFile -->
+                <div class="inputs">
+                    <input type="button" class="button" value="Load Map" onclick="readFile();">
+                </div>
+
+                <!-- Penyimpanan terhadap perubahan peta, menjalankan fungsi saveFile -->
+                <div class="label">
+                    <label>Made a change on the map?</label>
+                </div>
+                <div class="inputs">
+                    <button class="button-down" onclick="saveFile();"><span>Save Current Map </span></button>
+                </div>
+
+                <!-- Pemilihan simpul yang akan dianalisis -->
+                <h4>Shortest Path Searching</h4>
+                <div>
+                    <!-- Simpul awal -->
+                    <div class="label">
+                        <label for="instantiateInitial">Initial node</label>
+                    </div>
+                    <div class="inputs">
+                        <select id="instantiateInitial" class="lengthinput init-pos"></select>
+                    </div>
+                        
+                    <!-- Simpul tujuan -->
+                    <div class="label">
+                        <label for="instantiateFinal">Final node</label>
+                    </div>
+                    <div class="inputs">
+                        <select id="instantiateFinal" class="lengthinput final-pos"></select>
+                    </div>
+                </div>
+
+                <!-- Melakukan pemrosesan algoritma sesuai button, menjalankan fungsi doAlgo() -->
+                <div class="inputs">
+                    <input type="button" class="button" value="Process UCS" onclick="doAlgo(2);">
+                    <input type="button" class="button" value="Process A*" onclick="doAlgo(1);">
+                </div>
+            </div>
+
+            <!-- Bagian kolom kanan -->
+            <div class="column right">
+                <!-- Menambah relasi antar simpul masukan -->
+                <h4>Insert Relations</h4>
+                <div class="row">
+                    <!-- Simpul awal -->
+                    <div class="label column">
+                        <label for="relationInitial">Start node</label>
+                    </div>
+                    <div class="inputs column right">
+                        <select id="relationInitial" class="lengthinput2 init-rels"></select>
+                    </div>
+                        
+                    <!-- Simpul tujuan -->
+                    <div class="label column">
+                        <label for="relationFinal">Final node</label>
+                    </div>
+                    <div class="inputs column right">
+                        <select id="relationFinal" class="lengthinput2 final-rels"></select>
+                    </div>
+                </div>
+
+                <!-- Proses penambahan relasi simpul, menjalankan fungsi addRelation -->
+                <div class="inputs">
+                    <input type="button" class="button" value="Insert Relation" onclick="addRelation();">
+                </div>
+
+                <!-- Menampilkan data simpul yang berhasil di-load -->
+                <h4>List of Nodes</h4>
+                <table class="table">
+                    <!-- Table header -->
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nodes</th>
+                            <th scope="col">Distance</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Table content, isi dirubah dari javascript sesuai jumlah masukan -->
+                    <tbody id="pathContent">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
 </html>
