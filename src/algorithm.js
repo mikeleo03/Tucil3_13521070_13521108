@@ -190,9 +190,7 @@ function AStar (start, finish, adjMatrix, posList) {
  * @param {Number[][]} adjMatrix - matriks ketetanggan
  */
 function UCS(start, finish, adjMatrix) {
-
-console.log(start," -> ", finish)
-    // Instansiasi simpul yang udah pernah kena ekspan
+    // Instansiasi simpul yang udah pernah dijelajahi
     let sudahdicek = [];
     sudahdicek.push(start);
     // Inisiasi posisi awal
@@ -204,38 +202,45 @@ console.log(start," -> ", finish)
     let listActiveNode = new PQ();
     listActiveNode.enqueue(initialPath);
 
+    // Selama belum ada rute yang mencapai finish
     while (true) {
-      // Dequeue untuk ambil rute paling depan
+        // Jika tidak ada jalur yang tersedia || semua sudah di cek
+        if (listActiveNode.isEmpty()) {
+            alert("There's no path to that node");
+            break;
+        }
+
+        // hapus dan ambil rute paling depan dari antrian prioritas
         let Paths = listActiveNode.dequeue();
         // Ubah posisi titik analisis saat ini
         current = Paths.currentPos;
-
         if (!sudahdicek.includes(current)) {
             sudahdicek.push(current);
         }
-        // Cek apakah sudah sampai finish
-        if (current == finish) {
+
+        // Jika sudah mencapai tujuan, keluarkan jalur
+        if(current == finish) {
             finalPath = Paths;
             break;
         }
-        // Cari semua ekspan dari titik ini
+
+        // Cari semua simpul jelajah dari titik saat ini
         let expandNode = getExpand(current, adjMatrix, sudahdicek);
 
-        if (isNodeNotConnected(expandNode, sudahdicek, adjMatrix, newNodecount)) {
-            alert("There's no path to that node");
-            break;
-        } 
-        else {
-            for (var i = 0; i < expandNode.length; i++) {
-                // Insiasi path baru yang ditambahkan rute sebelumnya
-                gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
-
-                // Buat sebuah jalur baru
-                let newPath = new Path(expandNode[i] + 1, gn, gn);
-                newPath.copyPath(Paths);
-                newPath.addPosition(expandNode[i] + 1);
-                listActiveNode.enqueue(newPath);
-            }
+        // lakukan iterasi terhadap semua simpul jelajah
+        for (var i = 0; i < expandNode.length; i++) {
+            // Insiasi path baru yang ditambahkan rute sebelumnya
+            // Ambil nilai gn dan
+            gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+            
+            // Buat sebuah jalur baru
+            let newPath = new Path(expandNode[i] + 1, gn, gn)
+            // Salin nilai jalur sebelumnya
+            newPath.copyPath(Paths);
+            // Tambahkan simpul ekspan dalam jalur baru
+            newPath.addPosition(expandNode[i] + 1);
+            // Masukkan jalur baru dalam antrian prioritas
+            listActiveNode.enqueue(newPath);
         }
     }
 }
