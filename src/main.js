@@ -102,16 +102,75 @@ function readFile () {
 
     // Instansiasi pembacaan file dengan JSON
     function initiateSearch (e) {
-        // Informasi dari masukan
-        infoParsed = JSON.parse(e.target.result.toString());
-        // Menangkap nilai dari masukan JSON
-        posList = infoParsed.posList;
-        adjMatrix = infoParsed.adjMatrix;
+        let value = e.target.result;
+        // Melakukan berbagai skema validasi
+        try {
+            // Validasi apakah file masukan kosong
+            if (value == "") {
+                throw "Your file input is empty! ";
+            }
 
-        startMapSearch();   // Inisiasi penandaan posisi koordinat pada peta
-        drawPathLine();     // Menggambar petak path
-        tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
-        chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
+            // Proses informasi berdasar JSON
+            infoParsed = JSON.parse(value.toString());
+            // Menangkap nilai dari masukan JSON
+            console.log(infoParsed);
+            posList = infoParsed.posList;
+            console.log(typeof posList == "object");
+            adjMatrix = infoParsed.adjMatrix;
+            console.log(adjMatrix);
+            // Validasi apakah masukan sesuai dengan format
+            if (posList == null) {
+                throw "`posList` value is not defined! ";
+            } else if (adjMatrix == null) {
+                throw "`adjMatrix` value is not defined! ";
+            } 
+
+            // Validasi terhadap isi file
+            // Jumlah elemen posList dan adjMatrix beda
+            if (posList.length != adjMatrix.length) {
+                throw "There's might be inconsistency between the `posList` and `adjMatrix` data! ";
+            }
+
+            // Isi posList
+            for (var i = 0; i < posList.length; i++) {
+                if (posList[i].id == "" || posList[i].id == null) {
+                    throw "There's ID value in `posList` that not well defined! ";
+                } else if (typeof posList[i].lintang != "number" || typeof posList[i].bujur != "number") {
+                    throw "There's lintang or bujur value in `posList` that not well defined! ";
+                }
+            }
+
+            // Isi adjMatrix
+            for (var i = 0; i < adjMatrix.length; i++) {
+                // Cek apakah jumlah kolom dari setiap baris sama
+                if (adjMatrix.length != adjMatrix[i].length) {
+                    throw "The number of row and column in `AdjMatrix` is different! ";
+                }
+                // Uji isi matriks ketetanggaan
+                for (var j = 0; j < adjMatrix.length; j++) {
+                    if (i == j && adjMatrix[i][j] != 0) {
+                        throw "The same node must be connected to one another! ";
+                    } else if (adjMatrix[i][j] != adjMatrix[j][i]) {
+                        throw "There must be inconsistency value for distance in `adjMatrix`! ";
+                    }
+                }
+            }
+
+            // Jika sampai pada tahap ini, maka peta yang terbaca sudah pasti valid
+            startMapSearch();   // Inisiasi penandaan posisi koordinat pada peta
+            drawPathLine();     // Menggambar petak path
+            tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
+            chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
+            
+        } catch (err) {
+            if (err instanceof SyntaxError) {
+                alert("There's syntax error in your input, Please check your file!");
+            } else if (err instanceof TypeError) {
+                alert("Your input might not in array, Please check your file!");
+            } else {
+                alert(err + "Please check your file");
+            }
+        }
     }
 }
 
