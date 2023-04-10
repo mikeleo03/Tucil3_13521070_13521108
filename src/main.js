@@ -46,9 +46,18 @@ window.onload = function() {
         
         // Penanganan terhadap event dragend pada HTML
         marker.on('dragend', function() {
-            // Merubah posisi sesuai koordinat akhir drag
+            // Ambil nilai lintang dan bujur, perbaharui
             posList[marker.id - 1].lintang = marker.getLatLng().lat;
             posList[marker.id - 1].bujur = marker.getLatLng().lng;
+            // Mengganti nilai matriks ketetangaan
+            for (var i = 0; i < adjMatrix.length; i++) {
+                if (adjMatrix[i][marker.id - 1] != -1) {
+                    let distance = heuristics(posList, i + 1, marker.id).toFixed(3)
+                    // Perbaharui nilai jaraknya
+                    adjMatrix[i][marker.id - 1] = Number(distance);
+                    adjMatrix[marker.id - 1][i] = Number(distance);
+                }
+            }
             drawPathLine();         // Gambar ulang petak yang baru
             tablePathControl();     // Perbaharui nilai data simpul
         });
@@ -109,15 +118,12 @@ function readFile () {
             if (value == "") {
                 throw "Your file input is empty! ";
             }
-
             // Proses informasi berdasar JSON
             infoParsed = JSON.parse(value.toString());
             // Menangkap nilai dari masukan JSON
-            console.log(infoParsed);
             posList = infoParsed.posList;
-            console.log(typeof posList == "object");
             adjMatrix = infoParsed.adjMatrix;
-            console.log(adjMatrix);
+
             // Validasi apakah masukan sesuai dengan format
             if (posList == null) {
                 throw "`posList` value is not defined! ";
@@ -161,7 +167,7 @@ function readFile () {
             drawPathLine();     // Menggambar petak path
             tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
             chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
-            
+
         } catch (err) {
             if (err instanceof SyntaxError) {
                 alert("There's syntax error in your input, Please check your file!");
@@ -208,8 +214,18 @@ function startMapSearch (){
 
         // Melakukan penanganan terhadap event dragend dari HTML
         marker.on('dragend', function() {
+            // Ambil nilai lintang dan bujur, perbaharui
             posList[marker.id - 1].lintang = marker.getLatLng().lat;
             posList[marker.id - 1].bujur = marker.getLatLng().lng;
+            // Mengganti nilai matriks ketetangaan
+            for (var i = 0; i < adjMatrix.length; i++) {
+                if (adjMatrix[i][marker.id - 1] != -1) {
+                    let distance = heuristics(posList, i + 1, marker.id).toFixed(3)
+                    // Perbaharui nilai jaraknya
+                    adjMatrix[i][marker.id - 1] = Number(distance);
+                    adjMatrix[marker.id - 1][i] = Number(distance);
+                }
+            }
             drawPathLine();
             tablePathControl();
         });
