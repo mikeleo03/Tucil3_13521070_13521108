@@ -697,10 +697,10 @@ function isNodeNotConnected (expandNode, sudahdicek, adjMatrix, newNodecount) {
  * h(n) adalah jarak garis lurus dari simpul n ke ke simpul tujuan
  * 
  * @function AStar
- * @param {int} start simpul awal
- * @param {int} finish simpul tujuan
- * @param {int[][]} adjMatrix matriks ketetanggan
- * @param {int[]} posList daftar posisi
+ * @param {Number} start simpul awal
+ * @param {Number} finish simpul tujuan
+ * @param {Number[][]} adjMatrix matriks ketetanggan
+ * @param {Number[]} posList daftar posisi
  */
 function AStar (start, finish, adjMatrix, posList) {
     // Instansiasi simpul yang udah pernah dijelajahi
@@ -764,6 +764,8 @@ function AStar (start, finish, adjMatrix, posList) {
  * @param {Number[][]} adjMatrix - matriks ketetanggan
  */
 function UCS(start, finish, adjMatrix) {
+
+console.log(start," -> ", finish)
     // Instansiasi simpul yang udah pernah kena ekspan
     let sudahdicek = [];
     sudahdicek.push(start);
@@ -776,12 +778,12 @@ function UCS(start, finish, adjMatrix) {
     let listActiveNode = new PQ();
     listActiveNode.enqueue(initialPath);
 
-    // Selama belum ada rute yang mencapai finish
     while (true) {
-        // Dequeue untuk ambil rute paling depan
+      // Dequeue untuk ambil rute paling depan
         let Paths = listActiveNode.dequeue();
         // Ubah posisi titik analisis saat ini
         current = Paths.currentPos;
+
         if (!sudahdicek.includes(current)) {
             sudahdicek.push(current);
         }
@@ -792,13 +794,17 @@ function UCS(start, finish, adjMatrix) {
         }
         // Cari semua ekspan dari titik ini
         let expandNode = getExpand(current, adjMatrix, sudahdicek);
-        if (expandNode.length == 0 && (adjMatrix.length <= sudahdicek.length + newNodecount || sudahdicek.length == 1)) {
+
+        if (isNodeNotConnected(expandNode, sudahdicek, adjMatrix, newNodecount)) {
             alert("There's no path to that node");
             break;
-        } else {
+        } 
+        else {
             for (var i = 0; i < expandNode.length; i++) {
                 // Insiasi path baru yang ditambahkan rute sebelumnya
                 gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
+
+                // Buat sebuah jalur baru
                 let newPath = new Path(expandNode[i] + 1, gn, gn);
                 newPath.copyPath(Paths);
                 newPath.addPosition(expandNode[i] + 1);

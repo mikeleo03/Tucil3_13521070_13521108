@@ -313,7 +313,6 @@ function UCS(start, finish, adjMatrix) {
     let listActiveNode = new PQ();
     listActiveNode.enqueue(initialPath);
 
-    // Selama belum ada rute yang mencapai finish
     while (true) {
         // Dequeue untuk ambil rute paling depan
         let Paths = listActiveNode.dequeue();
