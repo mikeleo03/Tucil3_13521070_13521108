@@ -28,10 +28,15 @@ window.onload = function() {
         // Melakukan penanganan terhadap marker yang digunakan pada peta
         let marker = L.marker(e.latlng, {draggable: 'true'});
         // Meminta nama simpul
-        var nodeName = prompt("What is the node name?");  
-        while (nodeName == "") {  
-            var nodeName = prompt("What is the node name?"); 
-        } 
+        var nodeName = prompt("What is the node name?");
+        
+        while (nodeName == "") {
+            var nodeName = prompt("What is the node name? (name cannot be empty)"); 
+        }
+
+        // Pengguna mengklik tombol cancel
+        if (nodeName == null) return;
+
         // Membuat sebuah simpul baru dalam JSON dengan data baru
         let newNode = {
             "id": (posList.length + 1).toString(), 
