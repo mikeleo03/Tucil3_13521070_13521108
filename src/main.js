@@ -218,7 +218,6 @@ function startMapSearch (){
         i++;
 
         // Mendefisikan isi pop-up peta dan menambah layer ke peta
-        console.log(info.nama);
         const popUpContent = 
             `<div class="popup-content">
                 <p>${info.id} - ${info.nama}</p>
@@ -389,19 +388,15 @@ function addRelation () {
  * @function deleteNode
  */
 function deleteNode (NodeID) {
-    /* console.log(NodeID);
-    console.log(typeof NodeID); */
-    // console.log(nama); 
     var index = -1; // Inisiasi kosong
     // Melakukan pencarian index melalui data ID
     posList.find (function (item, i) { 
         if (item.id === NodeID.toString()) {
-            console.log(item.nama);
             index = i;
             return i;
         }
     });
-    // console.log(index);
+
     // Menghapus isi poslist dengan id terkait
     posList.splice(index, 1);
     // Menghapus baris pada adjMatrix
