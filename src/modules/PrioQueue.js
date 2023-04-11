@@ -10,7 +10,7 @@ class PQ {
     /**
      * @constructor
      */
-    constructor() {
+    constructor () {
         this.queue = [];
     }
 
@@ -18,7 +18,7 @@ class PQ {
      * @method getLength - Getter panjang dari queue
      * @returns {Number}
      */
-    getLength() {
+    getLength () {
         return this.queue.length;
     }
 
@@ -27,7 +27,7 @@ class PQ {
      * @param {Number} idx
      * @returns {Path}
      */
-    getElmt(idx) {
+    getElmt (idx) {
         return this.queue[idx];
     }
 
@@ -36,7 +36,7 @@ class PQ {
      * @param {Number} idx
      * @param {Path} val
      */
-    setElmt(idx, val) {
+    setElmt (idx, val) {
         this.queue[idx] = val;
     }
 
@@ -46,7 +46,7 @@ class PQ {
      * @param {Path} pos2
      * @returns {PQ} 
      */
-    swap(pos1, pos2) {
+    swap (pos1, pos2) {
         let val = this.queue[pos1];
         this.setElmt(pos1, this.getElmt(pos2));
         this.setElmt(pos2, val);
@@ -57,7 +57,7 @@ class PQ {
     /**
      * @returns {Boolean} - Mengembalikan true jika queue kosong
      */
-    isEmpty() {
+    isEmpty () {
         return (this.getLength() == 0);
     }
 
@@ -67,8 +67,8 @@ class PQ {
      * 
      * @param {Path} newPath
      */
-    enqueue(newPath) {
-        var check = false; // Booelan validasi
+    enqueue (newPath) {
+        var check = false; // Boolean validasi
         // Menemukan lokasi yang tepat untuk insert
         for (var i = 0; i < this.getLength(); i++) {
             if (this.getElmt(i).getPrio() > newPath.getPrio()) {
@@ -91,7 +91,7 @@ class PQ {
      * 
      * @returns {Path} - Mengembalikan simpul dengan bobot terkecil
      */
-    dequeue() {
+    dequeue () {
         // Melakukan pengecekan apakah antrian kosong
         if (this.isEmpty()) {
             return "PrioQueue is empty";

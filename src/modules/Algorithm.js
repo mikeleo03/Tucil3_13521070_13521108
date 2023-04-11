@@ -34,7 +34,7 @@ function heuristics (posList, final, initial) {
 
 /**
  * Fungsi isAStarDone, untuk mengecek apakah proses pencarian A* sudah selesai dilaksanakan
- * Simpul tujuan yang sedang dianlisis sudah ada di listActiveNode
+ * Simpul tujuan yang sedang dianalisis sudah ada di listActiveNode
  * 
  * @function isAStarDone
  * @param {PQ} listActiveNode - List simpul yang masih aktif
@@ -42,9 +42,9 @@ function heuristics (posList, final, initial) {
  * @returns {Boolean} - Mengembalikan true jika simpul finish sudah ada di listActiveNode
  */
 function isAStarDone (listActiveNode, finish) {
-    // Insiasi nilai
+    // Inisiasi nilai
     let temp = false;
-    // Melakuakn traversal terhadap isi antrian
+    // Melakukan traversal terhadap isi antrian
     for (var i = 0; i < listActiveNode.getLength(); i++) {
         // Jika sudah ada yang membuat simpul tujuan
         if (listActiveNode.getElmt(i).currentPos == finish) {
@@ -63,14 +63,14 @@ function isAStarDone (listActiveNode, finish) {
  * 
  * @function getExpand
  * @param {Number} position - Simpul saat ini yang akan dicek
- * @param {Number[][]} adjMatrix - Matriks ketetangaan yang telah terdefinisi
+ * @param {Number[][]} adjMatrix - Matriks ketetanggaan yang telah terdefinisi
  * @param {Number[]} cek - Senarai simpul yang sudah pernah dianalisis
  * @returns {Number[]} - ID dari simpul jelajah
  */
 function getExpand (position, adjMatrix, cek) {
-    // Insiasi senarai penampung simpul jelajah
+    // Inisiasi senarai penampung simpul jelajah
     let expandNode = [];
-    // Melakukan traversal terhadap isi matriks ketetangaan
+    // Melakukan traversal terhadap isi matriks ketetanggaan
     for (var i = 0; i < adjMatrix[0].length; i++) {
         // Jika terdapat relasi simpul dan belum pernah dijelajahi
         if (adjMatrix[position - 1][i] != -1 && !cek.includes(i + 1)) {
@@ -92,7 +92,7 @@ function getExpand (position, adjMatrix, cek) {
  * @function AStar
  * @param {Number} start simpul awal
  * @param {Number} finish simpul tujuan
- * @param {Number[][]} adjMatrix matriks ketetanggan
+ * @param {Number[][]} adjMatrix matriks ketetanggaan
  * @param {Number[]} posList daftar posisi
  */
 function AStar (start, finish, adjMatrix, posList) {
@@ -128,7 +128,7 @@ function AStar (start, finish, adjMatrix, posList) {
         } else {
             // Jika tidak, lakukan iterasi terhadap semua simpul jelajah
             for (var i = 0; i < expandNode.length; i++) {
-                // Insiasi path baru yang ditambahkan rute sebelumnya
+                // Inisiasi path baru yang ditambahkan rute sebelumnya
                 // Ambil nilai gn dan hn
                 gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
                 hn = heuristics(posList, finish, expandNode[i] + 1);
@@ -154,7 +154,7 @@ function AStar (start, finish, adjMatrix, posList) {
  * @function UCS
  * @param {Number} start - simpul awal
  * @param {Number} finish - simpul tujuan
- * @param {Number[][]} adjMatrix - matriks ketetanggan
+ * @param {Number[][]} adjMatrix - matriks ketetanggaan
  */
 function UCS(start, finish, adjMatrix) {
     // Instansiasi simpul yang udah pernah dijelajahi
@@ -196,7 +196,7 @@ function UCS(start, finish, adjMatrix) {
 
         // lakukan iterasi terhadap semua simpul jelajah
         for (var i = 0; i < expandNode.length; i++) {
-            // Insiasi path baru yang ditambahkan rute sebelumnya
+            // Inisiasi path baru yang ditambahkan rute sebelumnya
             // Ambil nilai gn dan
             gn = Paths.passedpath + adjMatrix[current - 1][expandNode[i]];
             

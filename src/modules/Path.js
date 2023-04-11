@@ -15,7 +15,7 @@ class Path {
      * @param {Number} passedpath
      * @param {Number} priority
      */
-    constructor(currentPos, passedpath, priority) {
+    constructor (currentPos, passedpath, priority) {
         this.listPath = [];
         this.currentPos = currentPos;
         this.passedpath = passedpath;
@@ -26,7 +26,7 @@ class Path {
      * @method copyPath - Melakukan penyalinan isi dari jalur lain ke jalur ini
      * @param {Path} paths
      */
-    copyPath(paths) {
+    copyPath (paths) {
         for (var i = 0; i < paths.listPath.length; i++) {
             this.listPath.push(paths.listPath[i]);
         }
@@ -36,7 +36,7 @@ class Path {
      * @method getPrio - Getter bobot dari simpul yang sedang diperiksa
      * @returns {Number}
      */
-    getPrio() {
+    getPrio () {
         return this.priority;
     }
 
@@ -44,7 +44,7 @@ class Path {
      * @method printPath
      * @returns {String} - Mengembalikan string yang berisi jalur yang menjadi masukan
      */
-    printPath() {
+    printPath () {
         let Path = "";
         // Melakukan iterasi terhadap semua komponen penyusun jalur
         for (var i = 0; i < this.listPath.length; i++) {
@@ -63,7 +63,7 @@ class Path {
      * @method addPosition - Menambahkan simpul yang telah dilewati
      * @param {Number} pos
      */
-    addPosition(pos) {
+    addPosition (pos) {
         this.listPath.push(pos);
         this.currentPos = pos;
     }

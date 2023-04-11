@@ -10,7 +10,7 @@ let lines = [];
 
 // Berkaitan dengan setup awal web
 window.onload = function() {
-    // Intansiasi tidak menampilkan peta pada HTML
+    // Instansiasi tidak menampilkan peta pada HTML
     document.getElementsByClassName('map')[0].style.display = 'block';
     maps = L.map('map').setView([0, 0], 1);
 
@@ -58,7 +58,7 @@ window.onload = function() {
             // Ambil nilai lintang dan bujur, perbaharui
             posList[marker.id - 1].lintang = marker.getLatLng().lat;
             posList[marker.id - 1].bujur = marker.getLatLng().lng;
-            // Mengganti nilai matriks ketetangaan
+            // Mengganti nilai matriks ketetanggaan
             for (var i = 0; i < adjMatrix.length; i++) {
                 if (adjMatrix[i][marker.id - 1] != -1) {
                     let distance = heuristics(posList, i + 1, marker.id).toFixed(3)
@@ -76,7 +76,7 @@ window.onload = function() {
         posList.push(newNode);
 
         // Penanganan terhadap matriks ketetanggaan
-        // Instansiasi matriks elemen baru, baris matriks ketetanggan
+        // Instansiasi matriks elemen baru, baris matriks ketetanggaan
         let newRow = [];
         // Menambahkan elemen secara row-wise
         for (var i = 0; i < adjMatrix.length; i++) {
@@ -85,7 +85,7 @@ window.onload = function() {
         }
         // Menambah elemen column-wise
         newRow.push(0);             // Ingat, elemen baru pasti bertemu elemen baru
-        adjMatrix.push(newRow);     // Menambahkan instansasi baris baru matriks ketetangaan
+        adjMatrix.push(newRow);     // Menambahkan instansasi baris baru matriks ketetanggaan
 
         // Tangani untuk masukan
         chooseNode();
@@ -143,15 +143,15 @@ function readFile () {
             // Validasi terhadap isi file
             // Jumlah elemen posList dan adjMatrix beda
             if (posList.length != adjMatrix.length) {
-                throw "There's might be inconsistency between the `posList` and `adjMatrix` data! ";
+                throw "There might be inconsistency between the `posList` and `adjMatrix` data! ";
             }
 
             // Isi posList
             for (var i = 0; i < posList.length; i++) {
                 if (posList[i].id === "" || posList[i].id === null) {
-                    throw "There's ID value in `posList` that not well defined! ";
+                    throw "There's an ID value in `posList` that is not well defined! ";
                 } else if (typeof posList[i].lintang !== "number" || typeof posList[i].bujur !== "number") {
-                    throw "There's lintang or bujur value in `posList` that not well defined! ";
+                    throw "There's lintang or bujur value in `posList` that is not well defined! ";
                 }
             }
 
@@ -159,7 +159,7 @@ function readFile () {
             for (var i = 0; i < adjMatrix.length; i++) {
                 // Cek apakah jumlah kolom dari setiap baris sama
                 if (adjMatrix.length != adjMatrix[i].length) {
-                    throw "The number of row and column in `AdjMatrix` is different! ";
+                    throw "The number of rows and columns in `AdjMatrix` is different! ";
                 }
                 // Uji isi matriks ketetanggaan
                 for (var j = 0; j < adjMatrix.length; j++) {
@@ -175,7 +175,7 @@ function readFile () {
             startMapSearch();   // Inisiasi penandaan posisi koordinat pada peta
             drawPathLine();     // Menggambar petak path
             tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
-            chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
+            chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajahi
 
         } catch (err) {
             if (err instanceof SyntaxError) {
@@ -205,10 +205,10 @@ function startMapSearch (){
     markers = [];
 
     // Penampilan
-    // Melakukan zoom-in ke lokasi koordinat pertam masukan, nilai perbesaran = 16
+    // Melakukan zoom-in ke lokasi koordinat pertama masukan, nilai perbesaran = 16
     maps.flyTo([parseFloat(posList[0].lintang), parseFloat(posList[0].bujur)], 16);
 
-    // Melakukan pemosisisan terhadap kondisi peta setiap koordinat masukan
+    // Melakukan pemosisian terhadap kondisi peta setiap koordinat masukan
     let i = 1;
     // Melakukan parsing terhadap semua koordinat
     posList.forEach (function(info) {
@@ -217,7 +217,7 @@ function startMapSearch (){
         marker.id = i;
         i++;
 
-        // Mendefisikan isi pop-up peta dan menambah layer ke peta
+        // Mendefinisikan isi pop-up peta dan menambah layer ke peta
         const popUpContent = 
             `<div class="popup-content">
                 <p>${info.id} - ${info.nama}</p>
@@ -231,7 +231,7 @@ function startMapSearch (){
             // Ambil nilai lintang dan bujur, perbaharui
             posList[marker.id - 1].lintang = marker.getLatLng().lat;
             posList[marker.id - 1].bujur = marker.getLatLng().lng;
-            // Mengganti nilai matriks ketetangaan
+            // Mengganti nilai matriks ketetanggaan
             for (var i = 0; i < adjMatrix.length; i++) {
                 if (adjMatrix[i][marker.id - 1] != -1) {
                     let distance = heuristics(posList, i + 1, marker.id).toFixed(3)
@@ -264,7 +264,7 @@ function drawPathLine () {
     // Mengosongkan isi lines yang mungkin terisi dari sebelumnya
     lines = [];
 
-    // Melakukan traversal terhadap isi matriks ketetangaan
+    // Melakukan traversal terhadap isi matriks ketetanggaan
     for (var i = 0; i < adjMatrix.length; i++) {
         for (var j = 0; j < i; j++) {
             // Jika simpul memiliki relasi (tidak bernilai -1)
@@ -295,7 +295,7 @@ function tablePathControl () {
 
     // Membuat tabel list simpul dari masukan
     let count = 1;
-    // Melakukan traversal terhadap isi matriks ketetangaan
+    // Melakukan traversal terhadap isi matriks ketetanggaan
     for (var i = 0; i < adjMatrix.length; i++) {
         for (var j = 0; j < i; j++) {
             // Jika simpul memiliki relasi (tidak bernilai -1)
@@ -315,12 +315,12 @@ function tablePathControl () {
 
 /**
  * Fungsi chooseNode, melakukan penanganan terhadap pilihan simpul yang akan dianalisis
- * dilakukan dengan melakukan traversal terhadap isi matriks ketetangaan
+ * dilakukan dengan melakukan traversal terhadap isi matriks ketetanggaan
  * 
  * @function chooseNode
  */
 function chooseNode () {
-    // Instansiasi konstanta dengan mengemabil nilai elemen pada id HTML
+    // Instansiasi konstanta dengan mengambil nilai elemen pada id HTML
     let pilAwal = document.getElementsByClassName('init-pos')[0];
     let pilAkhir = document.getElementsByClassName('final-pos')[0];
     let relAwal = document.getElementsByClassName('init-rels')[0];
@@ -332,7 +332,7 @@ function chooseNode () {
     relAwal.innerHTML = '';
     relAkhir.innerHTML = '';
 
-    // Menambahkan nilai opsi untuk setiap id pada matriks ketetangaan
+    // Menambahkan nilai opsi untuk setiap id pada matriks ketetanggaan
     for (var i = 0; i < adjMatrix.length; i++){
         pilAwal.innerHTML += `<option value="${i}">${posList[i].id} - ${posList[i].nama}</option>`
         pilAkhir.innerHTML += `<option value="${i}">${posList[i].id} - ${posList[i].nama}</option>`
@@ -361,7 +361,7 @@ function addRelation () {
         if (init_rels === final_rels) {
             alert("You can't add a relation to node itself");
         } 
-        // Tidak bisa menambah relasi pada simpul yang seudah terhubung sebelumnya
+        // Tidak bisa menambah relasi pada simpul yang sudah terhubung sebelumnya
         else if (adjMatrix[init_rels][final_rels] != -1) {
             alert("The relation already exist");
         }
@@ -370,7 +370,7 @@ function addRelation () {
             // Gunakan fungsi heuristics untuk mengambil nilai jarak garis lurus
             let distance = heuristics(posList, parseInt(final_rels) + 1, parseInt(init_rels) + 1).toFixed(3);
 
-            // Isi matriks ketetanggan dengan angka jarak
+            // Isi matriks ketetanggaan dengan angka jarak
             adjMatrix[init_rels][final_rels] = Number(distance);
             adjMatrix[final_rels][init_rels] = Number(distance);
 
@@ -382,7 +382,7 @@ function addRelation () {
 }
 
 /**
- * Fungsi deleteNode, melakukan penghapussan simpul dengan id tertentu
+ * Fungsi deleteNode, melakukan penghapusan simpul dengan id tertentu
  * Melakukan pembaharuan terhadap nilai posList dan adjMatrix
  * 
  * @function deleteNode
