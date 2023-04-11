@@ -84,39 +84,6 @@ function getExpand (position, adjMatrix, cek) {
 }
 
 /**
- * Fungsi isNodeNotConnected, untuk melakukan pengecekan apakah terdapat simpul
- * yang berhubungan dengan simpul jelajah saat ini
- * 
- * @function isNodeNotConnected
- * @param {Number[]} expandNode - ID dari simpul jelajah
- * @param {Number[]} sudahdicek - Senarai daftar simpul yang sudah pernah dijelajahi
- * @param {Number[][]} adjMatrix - Matriks ketetangaan yang telah terdefinisi
- * @param {Number} newNodecount - Jumlah simpul baru yang ditambahkan pada peta pasca di-load
- * @returns {Boolean} - bernilai trus jika tidak terhubung, false jika terhubung
- */
-function isNodeNotConnected (expandNode, sudahdicek, adjMatrix, newNodecount) {
-    // Melakukan pengecekan apakah jumlah simpul jelajah kosong
-    // Jika tidak, maka false
-    // Jika iya, maka lakukan pengecekan terhadap isi simpul yang sudah pernah dijelajahi
-    // Terdapat 2 kondisi :
-    // 
-    // Skenario 1
-    // Pengecekan dilakukan dari simpul yang memiliki simpul jelajah tapi tidak terhubung dengan simpul yang dicek 
-    // Jika simpul yang dicek belum merupakan simpul lama (merupakan simpul dari masukan file), 
-    // maka setidaknya pasti memenuhi kondisi pencarian simpul jelajah pertama
-    // yaitu adjMatrix.length == sudahdicek.length + 1
-    // Tetapi jika ternyata simpul tersebut merupakan simpul baru (merupakan simpul yang dibuat dengan
-    // melakukan klik ganda pada peta yang sudah di-load), maka pasti akan memenuhi kondisi pencarian simpul
-    // jelajah kedua, yaitu adjMatrix.length <= sudahdicek.length + newNodecount
-    // Skenario 2
-    // Pengecekan balik, dilakukan dari simpul yang dicek sehingga memang tidak memiliki simpul jelajah
-    // Maka pencarian akan berhenti saat simpul yang sudah dicek berjumlah 1, yaitu simpul itu sendiri
-    return expandNode.length == 0 && (
-        (adjMatrix.length == sudahdicek.length + 1 || adjMatrix.length <= sudahdicek.length + newNodecount)
-        || sudahdicek.length == 1);
-}
-
-/**
  * Fungsi AStar, menjalankan algoritma A*.
  * prioritas berdasarkan f(n) = g(n) + h(n)
  * dengan g(n) adalah jarak dari simpul awal ke simpul n,
@@ -154,7 +121,7 @@ function AStar (start, finish, adjMatrix, posList) {
         // Cari semua simpul jelajah dari titik saat ini
         let expandNode = getExpand(current, adjMatrix, sudahdicek);
         // Jika simpul tidak lagi memiliki ekspan karena tidak terhubung dengan tujuan
-        if (isNodeNotConnected(expandNode, sudahdicek, adjMatrix, newNodecount)) {
+        if (expandNode.length == 0 && listActiveNode.isEmpty()) {
             // Keluarkan tanggapan dan keluar dari kalang
             alert("There's no path to that node");
             break;

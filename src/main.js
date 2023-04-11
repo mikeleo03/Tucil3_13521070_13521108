@@ -30,12 +30,12 @@ window.onload = function() {
         // Meminta nama simpul
         var nodeName = prompt("What is the node name?");
         
-        while (nodeName == "") {
+        while (nodeName === "") {
             var nodeName = prompt("What is the node name? (name cannot be empty)"); 
         }
 
         // Pengguna mengklik tombol cancel
-        if (nodeName == null) return;
+        if (nodeName === null) return;
 
         // Membuat sebuah simpul baru dalam JSON dengan data baru
         let newNode = {
@@ -43,8 +43,14 @@ window.onload = function() {
             "nama": nodeName, 
             "lintang": e.latlng.lat, 
             "bujur": e.latlng.lng};
-        marker.id = newNode.id;                              // Memperbaharui ID Marker
-        marker.bindPopup(`${newNode.id} - ${newNode.nama}`); // Melakukan penanganan popup menampilkan simpul
+        marker.id = newNode.id;
+        // Memperbaharui ID Marker
+        const popUpContent = 
+            `<div class="popup-content">
+                <p>${newNode.id} - ${newNode.nama}</p>
+                <input type="button" class="delete-button" value="Delete Node" onclick="deleteNode(${newNode.id});">
+            </div>`;
+        marker.bindPopup(popUpContent); // Melakukan penanganan popup menampilkan simpul
         maps.addLayer(marker);
         
         // Penanganan terhadap event dragend pada HTML
@@ -118,7 +124,7 @@ function readFile () {
         // Melakukan berbagai skema validasi
         try {
             // Validasi apakah file masukan kosong
-            if (value == "") {
+            if (value === "") {
                 throw "Your file input is empty! ";
             }
             // Proses informasi berdasar JSON
@@ -128,9 +134,9 @@ function readFile () {
             adjMatrix = infoParsed.adjMatrix;
 
             // Validasi apakah masukan sesuai dengan format
-            if (posList == null) {
+            if (posList === null) {
                 throw "`posList` value is not defined! ";
-            } else if (adjMatrix == null) {
+            } else if (adjMatrix === null) {
                 throw "`adjMatrix` value is not defined! ";
             } 
 
@@ -142,9 +148,9 @@ function readFile () {
 
             // Isi posList
             for (var i = 0; i < posList.length; i++) {
-                if (posList[i].id == "" || posList[i].id == null) {
+                if (posList[i].id === "" || posList[i].id === null) {
                     throw "There's ID value in `posList` that not well defined! ";
-                } else if (typeof posList[i].lintang != "number" || typeof posList[i].bujur != "number") {
+                } else if (typeof posList[i].lintang !== "number" || typeof posList[i].bujur !== "number") {
                     throw "There's lintang or bujur value in `posList` that not well defined! ";
                 }
             }
@@ -157,9 +163,9 @@ function readFile () {
                 }
                 // Uji isi matriks ketetanggaan
                 for (var j = 0; j < adjMatrix.length; j++) {
-                    if (i == j && adjMatrix[i][j] != 0) {
+                    if (i === j && adjMatrix[i][j] !== 0) {
                         throw "The same node must be connected to one another! ";
-                    } else if (adjMatrix[i][j] != adjMatrix[j][i]) {
+                    } else if (adjMatrix[i][j] !== adjMatrix[j][i]) {
                         throw "There must be inconsistency value for distance in `adjMatrix`! ";
                     }
                 }
@@ -205,14 +211,20 @@ function startMapSearch (){
     // Melakukan pemosisisan terhadap kondisi peta setiap koordinat masukan
     let i = 1;
     // Melakukan parsing terhadap semua koordinat
-    posList.forEach(function(info) {
+    posList.forEach (function(info) {
         // Mendefinisikan isi marker dan id
         let marker = L.marker([parseFloat(info.lintang), parseFloat(info.bujur)], {draggable: 'true'});
         marker.id = i;
         i++;
 
         // Mendefisikan isi pop-up peta dan menambah layer ke peta
-        marker.bindPopup(`${info.id} - ${info.nama}`);
+        console.log(info.nama);
+        const popUpContent = 
+            `<div class="popup-content">
+                <p>${info.id} - ${info.nama}</p>
+                <input type="button" class="delete-button" value="Delete Node" onclick="deleteNode(${info.id});">
+            </div>`;
+        marker.bindPopup(popUpContent); // Melakukan penanganan popup menampilkan simpul
         maps.addLayer(marker);
 
         // Melakukan penanganan terhadap event dragend dari HTML
@@ -323,10 +335,10 @@ function chooseNode () {
 
     // Menambahkan nilai opsi untuk setiap id pada matriks ketetangaan
     for (var i = 0; i < adjMatrix.length; i++){
-        pilAwal.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
-        pilAkhir.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
-        relAwal.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
-        relAkhir.innerHTML += `<option value="${i}">${(i + 1).toString()} - ${posList[i].nama}</option>`
+        pilAwal.innerHTML += `<option value="${i}">${posList[i].id} - ${posList[i].nama}</option>`
+        pilAkhir.innerHTML += `<option value="${i}">${posList[i].id} - ${posList[i].nama}</option>`
+        relAwal.innerHTML += `<option value="${i}">${posList[i].id} - ${posList[i].nama}</option>`
+        relAkhir.innerHTML += `<option value="${i}">${posList[i].id} - ${posList[i].nama}</option>`
     }
 }
 
@@ -338,7 +350,7 @@ function chooseNode () {
  */
 function addRelation () {
     // Penanganan jika peta belum terload, sehingga belum ada data yang terbaca
-    if (adjMatrix.length == 0 && posList.length == 0) {
+    if (adjMatrix.length === 0 && posList.length === 0) {
         alert("You haven't load any map yet!");
     } else {
         // Ambil nilai dari masukan pengguna melalui elemen pada kelas di HTML
@@ -347,7 +359,7 @@ function addRelation () {
         
         // Penanganan kasus penambahan relasi
         // Tidak dapat menambah relasi pada simpul itu sendiri
-        if (init_rels == final_rels) {
+        if (init_rels === final_rels) {
             alert("You can't add a relation to node itself");
         } 
         // Tidak bisa menambah relasi pada simpul yang seudah terhubung sebelumnya
@@ -371,6 +383,45 @@ function addRelation () {
 }
 
 /**
+ * Fungsi deleteNode, melakukan penghapussan simpul dengan id tertentu
+ * Melakukan pembaharuan terhadap nilai posList dan adjMatrix
+ * 
+ * @function deleteNode
+ */
+function deleteNode (NodeID) {
+    /* console.log(NodeID);
+    console.log(typeof NodeID); */
+    // console.log(nama); 
+    var index = -1; // Inisiasi kosong
+    // Melakukan pencarian index melalui data ID
+    posList.find (function (item, i) { 
+        if (item.id === NodeID.toString()) {
+            console.log(item.nama);
+            index = i;
+            return i;
+        }
+    });
+    // console.log(index);
+    // Menghapus isi poslist dengan id terkait
+    posList.splice(index, 1);
+    // Menghapus baris pada adjMatrix
+    adjMatrix.splice(index, 1);
+    // Menghapus semua baris yang berhubungan dengan simpul ini
+    for (var i = 0; i < adjMatrix.length; i++) {
+        adjMatrix[i].splice(index, 1);
+    }
+
+    // Layering pada peta
+    maps.removeLayer(markers[index]);
+    markers.splice(index, 1);
+
+    // Melakukan update pada kondisi peta
+    drawPathLine();     // Menggambar petak path
+    tablePathControl(); // Menangani tabel daftar simpul dan jaraknya
+    chooseNode();       // Melakukan penanganan terhadap pengisian simpul yang akan dijelajah
+}
+
+/**
  * Fungsi saveFile, melakukan penanganan terhadap opsi penyimpanan hasil
  * perubahan terhadap peta pada sebuah file JSON
  * 
@@ -378,7 +429,7 @@ function addRelation () {
  */
 function saveFile() {
     // Penanganan jika peta belum terload, sehingga belum ada data yang terbaca
-    if (adjMatrix.length == 0 && posList.length == 0) {
+    if (adjMatrix.length === 0 && posList.length === 0) {
         alert("You haven't load any map yet!");
     } else {
         // Instansiasi objek yang akan disimpan dalam JSON
@@ -406,24 +457,12 @@ function doAlgo (flag) {
     // Inisialisasi
     // Jika sebelumnya telah terdefinisi sebuah peta solusi, ubah kembali menjadi warna hijau
     // Ilustrasikan dalam peta masukan
-    if (finalPath.length != 0) {
-        // Instansiasi objek perubahan nilai
-        let pointPos = [];
-        for(let i = 0; i < finalPath.listPath.length; i++) {
-            pointPos.push(markers[finalPath.listPath[i] - 1].getLatLng());
-        }
-
-        // Gambar polyline berwarna hijau untuk "menghapus" petak sebelumnya
-        let line = L.polyline(pointPos, {color: 'green'});
-        lines.push(line);
-        maps.addLayer(line);
-    }
     // Kosongkan dulu isi finalPath sebelum proses selanjutnya
     finalPath = [];
 
     // Pemrosesan algoritma
     // Penanganan jika peta belum terload, sehingga belum ada data yang terbaca
-    if (adjMatrix.length == 0 && posList.length == 0) {
+    if (adjMatrix.length === 0 && posList.length === 0) {
         alert("You haven't load any map yet!");
     } else {
         // Inisiasi posisi, mengambil nilai posisi awal dan akhir dari HTML
@@ -431,7 +470,7 @@ function doAlgo (flag) {
         finalPosition = document.getElementsByClassName('final-pos')[0].value;
 
         // Pemrosesan berdasarkan flag masukan
-        if (flag == 1) {
+        if (flag === 1) {
             // Melakukan pemrosesan menggunakan A*
             AStar(parseInt(initialPosition) + 1, parseInt(finalPosition) + 1, adjMatrix, posList);
         } else {
@@ -443,12 +482,12 @@ function doAlgo (flag) {
         elmtPath = document.getElementsByClassName('path')[0];
 
         // Penanganan terhadap seluruh kemungkinan penampilan grafik
-        if (finalPath.length == 0) {
+        if (finalPath.length === 0) {
             // Jika panjang path kosong, maka tidak ada jalur
             elmtPath.innerHTML = '<p>Path not found!</p>';
         } else {
             // Jika ada, cetak path
-            if (flag == 1) {
+            if (flag === 1) {
                 // Cetak sebagai hasil algoritma A*
                 elmtPath.innerHTML = `<h4>Result using A* Algorithm</h4>`;
                 elmtPath.innerHTML += `<p>Path : ${finalPath.printPath()}     |     Distance : ${finalPath.getPrio().toFixed(3)} km</p>`;
