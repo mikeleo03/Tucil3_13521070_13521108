@@ -199,8 +199,8 @@ function startMapSearch (){
     markers = [];
 
     // Penampilan
-    // Melakukan zoom-in ke lokasi koordinat pertam masukan, bilai perbesaran = 17
-    maps.flyTo([parseFloat(posList[0].lintang), parseFloat(posList[0].bujur)], 17);
+    // Melakukan zoom-in ke lokasi koordinat pertam masukan, nilai perbesaran = 16
+    maps.flyTo([parseFloat(posList[0].lintang), parseFloat(posList[0].bujur)], 16);
 
     // Melakukan pemosisisan terhadap kondisi peta setiap koordinat masukan
     let i = 1;
