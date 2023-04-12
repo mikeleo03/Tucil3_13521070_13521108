@@ -12,7 +12,7 @@
 - [Cara Mengoperasikan Program](#cara-mengoperasikan-program)
 - [Daftar Fitur](#daftar-fitur)
 - [Project Status](#project-status)
-- [Screenshots](#pscreenshots)
+- [Screenshots](#screenshots)
 
 ## Author
 | NIM      | Nama                        | Github Profile                            |
@@ -127,7 +127,8 @@ Berikut adalah daftar fitur yang berhasil diimplementasikan dan beberapa fitur t
 6. Fitur peta dengan API untuk melihat tampilan jarak [Bonus]
 7. Menambahkan simpul secara manual pada bagian `Insert Relation` [Tambahan]
 8. Melihat daftar jarak antar simpul yang terbaca pada ketiga tipe masukan [Tambahan]
-9. Menyimpan konfigurasi peta yang mengalami perubahan dari berbagai jenis tipe masukan dengan `Save Current Map` [Tambahan]
+9. Melakuakn pergeseran posisi simpul dan *website* akan melakukan pembaharuan data secara otomatis [Tambahan]
+10. Menyimpan konfigurasi peta yang mengalami perubahan dari berbagai jenis tipe masukan dengan `Save Current Map` [Tambahan]
 
 ## Project Status
 Status : *Completed*
