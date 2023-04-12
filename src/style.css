@@ -52,7 +52,14 @@ nav ul {
     font-weight: bold;
     font-size: 1.5rem;
     padding: 1.5rem;
+    padding-left: 0rem;
+    margin-left: -44rem;
     margin-bottom: 0.1rem;
+}
+
+img {
+    padding-left: 1.5rem;
+    padding-top: 1.75rem;
 }
     
 /* Style bagian body */

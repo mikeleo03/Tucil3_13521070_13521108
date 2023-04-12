@@ -148,7 +148,7 @@ function readFile () {
 
             // Isi posList
             for (var i = 0; i < posList.length; i++) {
-                if (posList[i].id === "" || posList[i].id === null) {
+                if (posList[i].id === "" || posList[i].id === null || posList[i].id === undefined) {
                     throw "There's an ID value in `posList` that is not well defined! ";
                 } else if (typeof posList[i].lintang !== "number" || typeof posList[i].bujur !== "number") {
                     throw "There's lintang or bujur value in `posList` that is not well defined! ";
@@ -422,7 +422,7 @@ function deleteNode (NodeID) {
  * 
  * @function saveFile
  */
-function saveFile() {
+function saveFile () {
     // Penanganan jika peta belum terload, sehingga belum ada data yang terbaca
     if (adjMatrix.length === 0 && posList.length === 0) {
         alert("You haven't load any map yet!");
